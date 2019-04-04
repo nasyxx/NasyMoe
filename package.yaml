@@ -1,0 +1,41 @@
+name: NasyMoe
+version: 0.2.0.0
+
+synopsis: Personal website of Nasy.
+description: Personal website of Nasy.
+category: Web
+author: Nasy
+maintainer: nasyxx+nasymoe@gmail.com
+license: GPL-3
+license-file: LICENSE
+copyright: 2019 Nasy
+
+github: nasyxx/nasyxx.github.io
+
+ghc-options:
+- -Wall
+- -threaded
+- -rtsopts
+- -with-rtsopts=-N
+- -Wincomplete-uni-patterns
+- -Wincomplete-record-updates
+- -Wcompat
+- -Widentities
+- -Wredundant-constraints
+- -fhide-source-paths
+- -Wpartial-fields
+
+dependencies:
+- base
+- Cabal
+
+executables:
+  site:
+    main: Main.hs
+    source-dirs: src
+    default-extensions:
+    - OverloadedStrings
+    dependencies:
+    - filepath
+    - hakyll
+    - HTTP

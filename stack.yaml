@@ -1,0 +1,8 @@
+resolver: lts-13.15
+
+ghc-options:
+  "$locals": -fhide-source-paths
+
+extra-deps:
+- hakyll-4.12.5.1
+- lrucache-1.2.0.1
