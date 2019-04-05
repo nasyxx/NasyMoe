@@ -33,8 +33,8 @@ License  : GPL-3
 There are more things in heaven and earth, Horatio, than are dreamt.
   From "Hamlet"
 -->
-<html encoding="UTF-8"
-      charset="UTF-8"
+<html encoding="utf-8"
+      charset="utf-8"
       lang="zh-CN"
       language="Chinese"
       prefix="og: http://ogp.me/ns#">
@@ -47,6 +47,13 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 
     <meta name="author" content="Nasy" />
     <meta name="owner"  content="Nasy">
+
+    <meta name="og:site_name" content="Nasy Land" />
+    <meta name="og:title" content="$title$" />
+    <meta name="og:url" content="https://nasy.moe" />
+    <meta name="og:description" content="Nasy 的花园，栽花养鱼闲聊的地方～" />
+    <meta name="og:image" content="https://nasy.moe/images/icon.png" />
+    <meta name="og:type" content="blog" />
 
     <meta http-equiv="Cache-Control"
           content="public,max-age=1800,max-stale,stale-while-revalidate=86400,stale-if-error=259200"
@@ -71,10 +78,32 @@ There are more things in heaven and earth, Horatio, than are dreamt.
           content="RevealTrans(Duration=1.0,Transition=1)"/>
     <meta http-equiv="Page-Exit"
           content="RevealTrans(Duration=1.0,Transition=1)"/>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-102577027-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-102577027-1');
+    </script>
+
+    <script src="//instant.page/1.1.0"
+            type="module"
+            integrity="sha384-EwBObn5QAxP8f09iemwAJljc+sU+eUXeL9vSBw1eNmVarwhKk2F9vBEpaN9rsrtp">
+    </script>
+
   </head>
   <body>
+    <header id="header" class="header">
+      <h1>Nasy Land</h1>
+    </header>
     <main id="main" class="main">
       $body$
     </main>
+    <footer>
+      $partial("templates/partials/nav.html")$
+    </footer>
   </body>
 </html>
