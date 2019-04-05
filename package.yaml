@@ -1,6 +1,7 @@
 name: NasyMoe
 version: 0.2.0.0
 
+
 synopsis: Personal website of Nasy.
 description: Personal website of Nasy.
 category: Web
@@ -10,7 +11,9 @@ license: GPL-3
 license-file: LICENSE
 copyright: 2019 Nasy
 
+
 github: nasyxx/nasyxx.github.io
+
 
 ghc-options:
 - -Wall
@@ -29,13 +32,23 @@ dependencies:
 - base
 - Cabal
 
+
 executables:
   site:
-    main: Main.hs
+    main: Site.hs
     source-dirs: src
-    default-extensions:
-    - OverloadedStrings
+    other-modules: []
     dependencies:
     - filepath
     - hakyll
     - HTTP
+  style:
+    main: Style.hs
+    source-dirs: src
+    other-modules: []
+    dependencies:
+    - clay
+
+
+default-extensions:
+- OverloadedStrings

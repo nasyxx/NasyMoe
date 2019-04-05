@@ -31,7 +31,7 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 
 --------------------------------------------------------------------------------
 -- |
--- Filename   : Main.hs
+-- Filename   : Site.hs
 -- Project    : src
 -- Author     : Nasy
 -- License    : GPL-3.0+
@@ -41,9 +41,7 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --
 --
 --------------------------------------------------------------------------------
-
-module Main where
-
+module Main (main) where
 --------------------------------------------------------------------------------
 import           Data.List                      ( isSuffixOf )
 --------------------------------------------------------------------------------
