@@ -90,6 +90,7 @@ config = defaultConfiguration { destinationDirectory = "public" }
 main :: IO ()
 main = hakyllWith config $ do
     match "templates/*" $ compile templateBodyCompiler
+    match "templates/partials/*" $ compile templateBodyCompiler
     create ["index.html"] $ do
         route idRoute
         compile $ do
