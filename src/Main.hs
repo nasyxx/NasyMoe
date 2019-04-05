@@ -72,6 +72,7 @@ import           Hakyll                         ( Compiler
                                                 , makeItem
                                                 , loadAndApplyTemplate
                                                 , relativizeUrls
+                                                , Context
                                                 )
 --------------------------------------------------------------------------------
 import           Network.HTTP.Base              ( urlEncode )
@@ -92,16 +93,19 @@ main = hakyllWith config $ do
     create ["index.html"] $ do
         route idRoute
         compile $ do
-            let context = constField "title" "Nasy Land" <> defaultContext
+            let context = nTitle <> defaultContext
             makeItem []
                 >>= tLayout context
                 >>= relativizeUrls
                 >>= cleanIndexUrls
     where tLayout = loadAndApplyTemplate "templates/layout.html"
 
+--------------------------------------------------------------------------------
+-- | Context
+nTitle :: Context a
+nTitle = constField "title" "Nasy Land"
 
 --------------------------------------------------------------------------------
-
 -- | Clean Route.
 cleanRoute :: Routes
 cleanRoute = customRoute createIndexRoute
