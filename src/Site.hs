@@ -66,11 +66,15 @@ import           Hakyll                         ( Compiler
                                                 , route
                                                 , templateBodyCompiler
                                                 , toFilePath
+                                                , copyFileCompiler
                                                 , withUrls
                                                 , makeItem
                                                 , loadAndApplyTemplate
+                                                , pandocCompiler
                                                 , relativizeUrls
                                                 , Context
+                                                , withItemBody
+                                                , unixFilter
                                                 )
 --------------------------------------------------------------------------------
 import           Network.HTTP.Base              ( urlEncode )
@@ -87,8 +91,22 @@ config = defaultConfiguration { destinationDirectory = "public" }
 
 main :: IO ()
 main = hakyllWith config $ do
+    match "images/*" $ do
+        route idRoute
+        compile copyFileCompiler
+
     match "templates/*" $ compile templateBodyCompiler
     match "templates/partials/*" $ compile templateBodyCompiler
+
+    match "blogs/*" $ do
+        route cleanRoute
+        compile
+            $   pandocCompiler
+            >>= tBlog defaultContext
+            >>= tLayout defaultContext
+            >>= relativizeUrls
+            >>= cleanIndexUrls
+
     create ["index.html"] $ do
         route idRoute
         compile $ do
@@ -97,7 +115,14 @@ main = hakyllWith config $ do
                 >>= tLayout context
                 >>= relativizeUrls
                 >>= cleanIndexUrls
-    where tLayout = loadAndApplyTemplate "templates/layout.html"
+
+    create ["styles/main.css"] $ do
+        route idRoute
+        compile $ makeItem [] >>= withItemBody
+            (unixFilter "stack" ["exec", "style"])
+  where
+    tLayout = loadAndApplyTemplate "templates/layout.html"
+    tBlog   = loadAndApplyTemplate "templates/blog.html"
 
 --------------------------------------------------------------------------------
 -- | Context
