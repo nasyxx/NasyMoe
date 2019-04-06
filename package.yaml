@@ -42,6 +42,7 @@ executables:
     - filepath
     - hakyll
     - HTTP
+    - split
   style:
     main: Style.hs
     source-dirs: src

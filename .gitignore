@@ -1,5 +1,6 @@
 public/
 _cache/
+_temp/
 TAGS
 NasyMoe.cabal
 # Created by https://www.gitignore.io/api/haskell,macOS,emacs

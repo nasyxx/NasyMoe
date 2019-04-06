@@ -44,38 +44,10 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 module Main (main) where
 --------------------------------------------------------------------------------
 import           Data.List                      ( isSuffixOf )
+import           Data.List.Split                ( splitOn )
+import           Data.Char                      ( toLower )
 --------------------------------------------------------------------------------
-import           Hakyll                         ( Compiler
-                                                , Configuration
-                                                , Item
-                                                , Routes
-                                                , compile
-                                                , constField
-                                                , create
-                                                , customRoute
-                                                , defaultConfiguration
-                                                , defaultContext
-                                                , destinationDirectory
-                                                , hakyllWith
-                                                , idRoute
-                                                , listField
-                                                , loadAll
-                                                , match
-                                                , recentFirst
-                                                , replaceAll
-                                                , route
-                                                , templateBodyCompiler
-                                                , toFilePath
-                                                , copyFileCompiler
-                                                , withUrls
-                                                , makeItem
-                                                , loadAndApplyTemplate
-                                                , pandocCompiler
-                                                , relativizeUrls
-                                                , Context
-                                                , withItemBody
-                                                , unixFilter
-                                                )
+import           Hakyll
 --------------------------------------------------------------------------------
 import           Network.HTTP.Base              ( urlEncode )
 import           System.FilePath.Posix          ( takeBaseName
@@ -99,6 +71,8 @@ main = hakyllWith config $ do
     match "templates/partials/*" $ compile templateBodyCompiler
 
     match "blogs/*" $ do
+        route tempRoute
+        compile $ getResourceString >>= fromOrgCompiler
         route cleanRoute
         compile
             $   pandocCompiler
@@ -130,6 +104,10 @@ nTitle :: Context a
 nTitle = constField "title" "Nasy Land"
 
 --------------------------------------------------------------------------------
+-- | Temp Route
+tempRoute :: Routes
+tempRoute = customRoute (\i -> ".." </> "_temp" </> toFilePath i)
+
 -- | Clean Route.
 cleanRoute :: Routes
 cleanRoute = customRoute createIndexRoute
@@ -155,6 +133,23 @@ cleanIndex url | idx `isSuffixOf` url = take (length url - length idx) url
                | otherwise            = url
     where idx = "index.html"
 
+
+--------------------------------------------------------------------------------
+-- | From org get metadatas.
+fromOrgCompiler :: Item String -> Compiler (Item String)
+fromOrgCompiler = pure . fmap (\s -> (metadatasToStr . orgMetadatas) s ++ s)
+
+orgMetadatas :: String -> [String]
+orgMetadatas = map (format . lower . clean) . takeWhile (/= "") . lines
+  where
+    clean = concat . splitOn ">" . concat . splitOn "#+" . concat . splitOn "<"
+    lower s = (map toLower . takeWhile (/= ':')) s ++ dropWhile (/= ':') s
+    format = id
+
+metadatasToStr :: [String] -> String
+metadatasToStr = ("----------\n" ++) . (++ "----------\n") . unlines
+
+--------------------------------------------------------------------------------
 -- | Custom Funntions
 replaceSpace :: String -> String
 replaceSpace = map repl
@@ -162,6 +157,7 @@ replaceSpace = map repl
     repl ' ' = '-'
     repl c   = c
 
--- | I am not really happy with this, though gitalk makes me have to do like this.
+-- | Encode url
+-- I am not really happy with this, though gitalk makes me have to do like this.
 urlEString :: String -> String
 urlEString = urlEncode . replaceSpace
