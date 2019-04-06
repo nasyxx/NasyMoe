@@ -46,6 +46,8 @@ executables:
     main: Style.hs
     source-dirs: src
     other-modules: []
+    default-extensions:
+    - OverloadedLists
     dependencies:
     - clay
 
