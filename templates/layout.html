@@ -27,7 +27,6 @@
 Author   : Nasy
 Date     : Apr 4, 2019
 Email    : nasyxx+nasymoe@gmail.com
-Filename : index.html
 License  : GPL-3
 
 There are more things in heaven and earth, Horatio, than are dreamt.
@@ -40,13 +39,14 @@ There are more things in heaven and earth, Horatio, than are dreamt.
       prefix="og: http://ogp.me/ns#">
   <head>
 
+    <meta charset="utf-8" />
     <meta name="language"  content="Chinese" />
-    <meta name="copyright" content="2019 Nasy" />
 
     <title>$title$</title>
 
     <meta name="author" content="Nasy" />
     <meta name="owner"  content="Nasy">
+    <meta name="copyright" content="2019 Nasy" />
 
     <meta name="og:site_name" content="Nasy Land" />
     <meta name="og:title" content="$title$" />
@@ -79,7 +79,7 @@ There are more things in heaven and earth, Horatio, than are dreamt.
     <meta http-equiv="Page-Exit"
           content="RevealTrans(Duration=1.0,Transition=1)"/>
 
-    <link rel="stylesheet" href="styles/main.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/styles/main.css" type="text/css" media="screen" />
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-102577027-1"></script>
@@ -99,15 +99,20 @@ There are more things in heaven and earth, Horatio, than are dreamt.
   </head>
   <body>
     <header id="header" class="header">
-      <h1>Nasy Land</h1>
+      <h1><a title="home" href="/">Nasy Land</a></h1>
       $partial("templates/partials/nav.html")$
     </header>
     <main id="main" class="main">
       $body$
     </main>
-    <footer>
-      $partial("templates/partials/nav.html")$
-      $partial("templates/partials/friend-link.html")$
+    <footer id="footer" class="footer">
+      <header>
+        $partial("templates/partials/nav.html")$
+        $partial("templates/partials/friend-link.html")$
+      </header>
+      <section id="copyright">
+        <p>Copyright © 2019 Nasy
+      </section>
     </footer>
   </body>
 </html>
