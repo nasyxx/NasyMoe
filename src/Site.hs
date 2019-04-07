@@ -73,7 +73,12 @@ main = hakyllWith config $ do
     match "blogs/*" $ do
         route tempRoute
         compile $ getResourceString >>= fromOrgCompiler
-        route cleanRoute
+
+    tags <- buildTags ("_temp/blogs/*" .||. "_temp/blogs/Python/*")
+                      (fromCapture "tags/*")
+
+    match "_temp/blogs/*" $ do
+        route cleanRouteFromTemp
         compile
             $   pandocCompiler
             >>= tBlog defaultContext
@@ -85,10 +90,7 @@ main = hakyllWith config $ do
         route idRoute
         compile $ do
             let context = nTitle <> defaultContext
-            makeItem []
-                >>= tLayout context
-                >>= relativizeUrls
-                >>= cleanIndexUrls
+            makeItem [] >>= tLayout context >>= relativizeUrls
 
     create ["styles/main.css"] $ do
         route idRoute
@@ -114,6 +116,16 @@ cleanRoute = customRoute createIndexRoute
   where
     createIndexRoute ident =
         takeDirectory p </> (urlEString . takeBaseName) p </> "index.html"
+        where p = toFilePath ident
+
+
+cleanRouteFromTemp :: Routes
+cleanRouteFromTemp = customRoute createIndexRoute
+  where
+    createIndexRoute ident =
+        (takeBaseName . takeDirectory) p
+            </> (urlEString . takeBaseName) p
+            </> "index.html"
         where p = toFilePath ident
 
 
