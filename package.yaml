@@ -39,6 +39,7 @@ executables:
     source-dirs: src
     other-modules: []
     dependencies:
+    - blaze-html
     - filepath
     - hakyll
     - HTTP
