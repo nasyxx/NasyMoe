@@ -120,7 +120,7 @@ layout = do
                       "RevealTrans(Duration=1.0,Transition=1)"
                   H.link
                       ! A.rel "stylesheet"
-                      ! A.href "/style/main.css"
+                      ! A.href "/styles/main.css"
                       ! A.type_ "text/css"
                       ! A.media "screen"
                   googleAnalytics
