@@ -66,7 +66,6 @@ basic = do
     blockquote ? do
         flip (sym2 margin) 0 $ rem 1
         borderLeft solid (rem 1) quoteColor
-        p <? color (lighten 0.2 fontColor)
 
     -- | Paragraph style
     p ? do
@@ -87,21 +86,43 @@ basic = do
 
         a <? display block
 
-    -- | Hyperlink Style
+    -- | Text style
+    -- Text Shadow
+    zipWithM_
+        (\e c -> e ? do
+            textShadow (px 1) (px 2) (px 3) (setA 0.3 c)
+            hover & textShadow (px 1) (px 2) (px 5) (setA 0.5 c)
+        )
+        ([p, a] ++ hs')
+        ([fontColor, hyperColor] ++ hsc)
+    (pre <> code) ? do
+        textShadow (px 1) (px 2) (px 3) (setA 0.3 black)
+        hover & textShadow (px 1) (px 2) (px 5) (setA 0.5 black)
+
+    -- Text FontFamily
+    (hs <> a <> p <> span) ? fontFamily
+        ["chalkboard", "comic sans", "pingfang sc", "meslo lg"]
+        [sansSerif]
+    (pre <> ".sourceCode" <> code) ? fontFamily
+        ["Operator Mono SSm", "Operator Mono", "FiraCode", "hermit"]
+        [monospace]
+
+    -- Text Color
+    (p <> span) ? color fontColor
+    blockquote |> (p <> span) ? color (lighten 0.2 fontColor)
     a # "@href" ? do
         color hyperColor
         active & color hyperColorLight
         hover & color hyperColor
         visited & color hyperColorDark
-
-
-    -- | Pre and Soucecode
-    (pre <> ".sourceCode" <> code) ? fontFamily
-        ["Operator Mono SSm", "Operator Mono", "FiraCode", "hermit"]
-        [monospace]
+    zipWithM_ (\e c -> e ? color c) hs' hsc
 
     -- | Everything Style
     star ? transition "all" 0.4 easeInOut 0
+  where
+    hs  = h1 <> h2 <> h3 <> h4 <> h5 <> h6
+    hs' = [h1, h2, h3, h4]
+    hsc = [h1Color, h2Color, h3Color, h4Color]
 
 
 layout :: Css
@@ -113,7 +134,6 @@ layout = do
 
         -- | Color
         backgroundColor bgColor
-        color fontColor
 
         -- | Width & Height
         minHeight $ vh 100
@@ -203,7 +223,7 @@ noUnderline :: Css
 noUnderline = a ? textDecoration none
 
 
-bgColor, fontColor, quoteColor, ulColor, liColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2
+bgColor, fontColor, quoteColor, ulColor, liColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor
     :: Color
 bgColor = "#ffeab6"
 fontColor = "#303a52"
@@ -216,3 +236,9 @@ hyperColorLight = "#fc85ae"
 lineColor = "#70a1d7"
 lineColor2 = "#d988bc"
 shadowColor = "#f67280"
+h1Color = "#6c567b"
+h2Color = "#ff8364"
+h3Color = "#616f39"
+h4Color = "#c06c84"
+bHeaderFColor = "#a1de93"
+bHeaderBColor = lineColor
