@@ -213,6 +213,19 @@ layout = do
 
 blog :: Css
 blog = do
+    header # ".blog-header" ? do
+        h2 <? do
+            sym2 padding (rem 0.5) 0
+            backgroundColor $ setA 0.5 $ lighten 0.2 bgColor
+            color bHeaderFColor
+            "-webkit-text-stroke" -: "1px rgba(0,0,0,0.5)"
+            boxShadow [bsColor bHeaderBColor $ shadowWithBlur nil (px 2) (px 3)]
+            hover & boxShadow
+                [bsColor bHeaderBColor $ shadowWithBlur nil (px 2) (px 5)]
+            sym borderRadius (rem 0.5)
+            textShadow (px 1) (px 2) (px 3) (setA 0.3 black)
+            hover & textShadow (px 1) (px 2) (px 5) (setA 0.5 black)
+            textAlign center
     section # ".blog-section" ? do
         (div # ".sourceCode" <> pre) <? do
             overflowX scroll
