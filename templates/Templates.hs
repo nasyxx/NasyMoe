@@ -164,8 +164,14 @@ friendLinks = H.nav ! A.class_ "friend-links" $ H.ul $ zipWithM_
     (\h c ->
         H.li $ H.a ! A.href h ! A.title (toValue (map toLower c)) $ toHtml c
     )
-    [""]
-    [""]
+    [ "https://laobubu.net"
+    , "https://yuki.yuki233.com"
+    , "https://mitsuhachan.ml"
+    , "https://blog.zsakvo.cc"
+    , "https://daisuke.moe"
+    ]
+    ["Laobubu", "初雪", "三葉的喵窝", "水水的小窝", "白兔"]
+
 
 metas :: H.Html
 metas = H.section ! A.class_ "metas" $ do
