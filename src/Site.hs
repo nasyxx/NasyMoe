@@ -43,7 +43,9 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --------------------------------------------------------------------------------
 module Main (main) where
 --------------------------------------------------------------------------------
-import           Data.List                      ( isSuffixOf )
+import           Data.List                      ( isSuffixOf
+                                                , intersperse
+                                                )
 import           Data.List.Split                ( splitOn )
 import           Data.Char                      ( toLower )
 --------------------------------------------------------------------------------
@@ -51,12 +53,23 @@ import           Hakyll
 --------------------------------------------------------------------------------
 import           Network.HTTP.Base              ( urlEncode )
 import           System.FilePath.Posix          ( takeBaseName
-                                                , takeDirectory
                                                 , takeFileName
+                                                , takeDirectory
+                                                , splitDirectories
+                                                , joinPath
                                                 , (</>)
                                                 )
+import           Text.Blaze.Html                ( toHtml
+                                                , toValue
+                                                , (!)
+                                                )
+import qualified Text.Blaze.Html5              as H
+import qualified Text.Blaze.Html5.Attributes   as A
 --------------------------------------------------------------------------------
-
+import           Templates                      ( Templet(..)
+                                                , fromTemplet
+                                                )
+--------------------------------------------------------------------------------
 
 config :: Configuration
 config = defaultConfiguration { destinationDirectory = "public" }
@@ -67,22 +80,30 @@ main = hakyllWith config $ do
         route idRoute
         compile copyFileCompiler
 
-    match "templates/*" $ compile templateBodyCompiler
-    match "templates/partials/*" $ compile templateBodyCompiler
-
-    match "blogs/*" $ do
+    match ("blogs/*.org" .||. "blogs/*/*.org") $ do
         route tempRoute
         compile $ getResourceString >>= fromOrgCompiler
 
-    tags <- buildTags ("_temp/blogs/*" .||. "_temp/blogs/Python/*")
+    tags <- buildTags ("_temp/blogs/*.org" .||. "_temp/blogs/*/*.org")
                       (fromCapture "tags/*")
 
-    match "_temp/blogs/*" $ do
+    tagsRules tags $ \tag pat -> do
+        route cleanRoute
+        compile $ do
+            blogs <- recentFirst =<< loadAll pat
+            let blogsContext =
+                    listField "blogs" (blogContext tags) (pure blogs)
+            makeItem ""
+                >>= applyTemplets
+                        [Tags', Layout]
+                        (blogsContext <> tagsContext tags <> defaultContext)
+                >>= cleanIndexUrls
+
+    match ("_temp/blogs/*" .||. "_temp/blogs/*/*") $ do
         route cleanRouteFromTemp
         compile
             $   pandocCompiler
-            >>= tBlog defaultContext
-            >>= tLayout defaultContext
+            >>= applyTemplets [Blog, Layout] (authorx <> blogContext tags)
             >>= relativizeUrls
             >>= cleanIndexUrls
 
@@ -90,25 +111,49 @@ main = hakyllWith config $ do
         route idRoute
         compile $ do
             let context = nTitle <> defaultContext
-            makeItem [] >>= tLayout context >>= relativizeUrls
+            makeItem [] >>= applyTemplets [Layout] context >>= relativizeUrls
 
     create ["styles/main.css"] $ do
         route idRoute
         compile $ makeItem [] >>= withItemBody
             (unixFilter "stack" ["exec", "style"])
-  where
-    tLayout = loadAndApplyTemplate "templates/layout.html"
-    tBlog   = loadAndApplyTemplate "templates/blog.html"
 
 --------------------------------------------------------------------------------
 -- | Context
 nTitle :: Context a
 nTitle = constField "title" "Nasy Land"
 
+blogContext :: Tags -> Context String
+blogContext tags =
+    tagsContext tags <> dateField "date" "%B %e, %Y" <> defaultContext
+
+tagsContext :: Tags -> Context a
+tagsContext = tagsFieldWith getTags
+                            (simpleLink "tags-li")
+                            (mconcat . intersperse ",")
+                            "tags"
+
+authorx :: Context a
+authorx = functionField "authorx"
+    $ \args _ -> pure (if args == ["Nasy"] then "hide" else "")
 --------------------------------------------------------------------------------
 -- | Temp Route
 tempRoute :: Routes
-tempRoute = customRoute (\i -> ".." </> "_temp" </> toFilePath i)
+tempRoute = customRoute tempRoute'
+  where
+    tempRoute' i = ".." </> "_temp" </> takeDirectory p </> takeFileName p
+        where p = toFilePath i
+
+
+cleanRouteFromTemp :: Routes
+cleanRouteFromTemp = customRoute createIndexRoute
+  where
+    createIndexRoute ident =
+        (joinPath . tail . splitDirectories . takeDirectory) p
+            </> (urlEString . takeBaseName) p
+            </> "index.html"
+        where p = toFilePath ident
+
 
 -- | Clean Route.
 cleanRoute :: Routes
@@ -116,16 +161,6 @@ cleanRoute = customRoute createIndexRoute
   where
     createIndexRoute ident =
         takeDirectory p </> (urlEString . takeBaseName) p </> "index.html"
-        where p = toFilePath ident
-
-
-cleanRouteFromTemp :: Routes
-cleanRouteFromTemp = customRoute createIndexRoute
-  where
-    createIndexRoute ident =
-        (takeBaseName . takeDirectory) p
-            </> (urlEString . takeBaseName) p
-            </> "index.html"
         where p = toFilePath ident
 
 
@@ -156,13 +191,14 @@ orgMetadatas = map (format . lower . clean) . takeWhile (/= "") . lines
   where
     clean = concat . splitOn ">" . concat . splitOn "#+" . concat . splitOn "<"
     lower s = (map toLower . takeWhile (/= ':')) s ++ dropWhile (/= ':') s
-    format = id
+    format xs@('d' : 'a' : 't' : 'e' : _) = take 16 xs  -- drop weekday str. 2018-05-03 Thu -> 2018-05-03
+    format a                              = a
 
 metadatasToStr :: [String] -> String
 metadatasToStr = ("----------\n" ++) . (++ "----------\n") . unlines
 
 --------------------------------------------------------------------------------
--- | Custom Funntions
+-- | Custom Helper
 replaceSpace :: String -> String
 replaceSpace = map repl
   where
@@ -173,3 +209,27 @@ replaceSpace = map repl
 -- I am not really happy with this, though gitalk makes me have to do like this.
 urlEString :: String -> String
 urlEString = urlEncode . replaceSpace
+
+-- | Apply templates
+applyTemplets
+    :: [Templet] -> Context String -> Item String -> Compiler (Item String)
+applyTemplets ts = applyTemplates (map fromTemplet ts)
+
+applyTemplates
+    :: [Template] -> Context String -> Item String -> Compiler (Item String)
+applyTemplates []  _       _    = error "Need a template"
+applyTemplates [t] context item = applyTemplate t context item
+applyTemplates (t : ts) context item =
+    applyTemplate t context item >>= applyTemplates ts context
+
+--------------------------------------------------------------------------------
+-- | Templates
+simpleLink :: H.AttributeValue -> String -> Maybe FilePath -> Maybe H.Html
+simpleLink _ _ Nothing = Nothing
+simpleLink cstr str (Just filepath) =
+    Just
+        $ H.li
+        ! A.class_ cstr
+        $ H.a
+        ! A.href (toValue $ toUrl filepath)
+        $ toHtml ("#" ++ str)
