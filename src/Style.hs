@@ -54,8 +54,11 @@ import qualified Clay.Flexbox                  as CF
 
 
 main :: IO ()
-main = putCss $ basic >> layout >> blog
+main = putCss $ specialB >> basic >> layout >> blog
 
+specialB :: Css
+specialB = do
+    ".hide" ? display none
 
 basic :: Css
 basic = do
