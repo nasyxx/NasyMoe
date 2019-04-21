@@ -144,7 +144,7 @@ layout = do
                       H.h1 $ H.a ! A.title "home" ! A.href "/" $ "Nasy Land"
                       nav
                   H.main ! A.id "main" ! A.class_ "main" $ "$body$"
-                  H.footer ! A.id "header" ! A.class_ "footer" $ do
+                  H.footer ! A.id "footer" ! A.class_ "footer" $ do
                       H.header $ do
                           nav
                           friendLinks
