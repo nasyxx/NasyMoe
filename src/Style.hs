@@ -28,8 +28,7 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --------------------------------------------------------------------------------
 
 -}
-{-# LANGUAGE OverloadedStrings,
-             OverloadedLists #-}
+
 --------------------------------------------------------------------------------
 -- |
 -- Filename   : Style.hs
