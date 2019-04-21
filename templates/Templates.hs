@@ -40,13 +40,14 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --
 --
 --------------------------------------------------------------------------------
-module Templates where
+module Templates (Templet(..), fromTemplet, simpleLink) where
 --------------------------------------------------------------------------------
 import           Control.Monad                  ( zipWithM_ )
 import           Data.Char                      ( toLower )
 --------------------------------------------------------------------------------
 import           Hakyll                         ( Template
                                                 , readTemplate
+                                                , toUrl
                                                 )
 import           Text.Blaze.Html                ( (!)
                                                 , toValue
@@ -58,8 +59,11 @@ import           Text.Blaze.Html.Renderer.Pretty
                                                 ( renderHtml )
 import           Text.Blaze.Internal            ( customAttribute )
 --------------------------------------------------------------------------------
-data Templet = Layout | Blog
+
+data Templet = Layout | Blog | Blogs | Tags'
+
 --------------------------------------------------------------------------------
+
 fromTemplet :: Templet -> Template
 fromTemplet = readTemplate . renderHtml . \case
     Layout -> layout
@@ -67,7 +71,18 @@ fromTemplet = readTemplate . renderHtml . \case
     Blogs  -> blogs
     Tags'  -> tagsTemplate
 
+simpleLink :: H.AttributeValue -> String -> Maybe FilePath -> Maybe H.Html
+simpleLink _ _ Nothing = Nothing
+simpleLink cstr str (Just filepath) =
+    Just
+        $ H.li
+        ! A.class_ cstr
+        $ H.a
+        ! A.href (toValue $ toUrl filepath)
+        $ toHtml ("#" ++ str)
+
 --------------------------------------------------------------------------------
+
 layout :: H.Html
 layout = do
     H.docType
@@ -151,6 +166,7 @@ blogs = H.section ! A.class_ "blogs-list" $ H.ul $ do
     "$endfor$"
 
 --------------------------------------------------------------------------------
+
 nav :: H.Html
 nav = H.nav ! A.class_ "nasy-links" $ H.ul $ sequence_ $ zipWith3
     (\h t c -> H.li $ H.a ! A.href h ! A.title t $ c)
@@ -178,13 +194,25 @@ metas = H.section ! A.class_ "metas" $ do
     mapM_
         (\m -> do
             toHtml $ "$if(" ++ m ++ ")$"
-            H.section ! A.class_ (toValue m) $ H.p $ toHtml $ "$" ++ m ++ "$"
+            H.section ! A.class_ (cc m) $ H.p $ toHtml $ "$" ++ m ++ "$"
             "$endif$"
         )
         ["author", "date", "summary"]
     "$if(tags)$"
     H.section ! A.class_ "meta tags" $ H.ul "$tags$"
     "$endif$"
+  where
+    cc "author" = "author $authorx(author)$"
+    cc m'       = toValue m'
+
+
+tagsTemplate :: H.Html
+tagsTemplate = H.section ! A.class_ "blogs-list" $ do
+    H.ul $ do
+        "$for(blogs)$"
+        H.li $ do
+            H.a ! A.href "$url$" ! A.title "$title$" $ "$title$"
+        "$endfor$"
 
 --------------------------------------------------------------------------------
 
