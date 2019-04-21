@@ -62,10 +62,11 @@ import           Text.Blaze.Internal            ( customAttribute )
 data Templet = Layout | Blog
 --------------------------------------------------------------------------------
 fromTemplet :: Templet -> Template
-fromTemplet t = readTemplate . renderHtml $ case t of
+fromTemplet = readTemplate . renderHtml . \case
     Layout -> layout
     Blog   -> blog
-
+    Blogs  -> blogs
+    Tags'  -> tagsTemplate
 
 --------------------------------------------------------------------------------
 layout :: H.Html

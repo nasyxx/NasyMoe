@@ -37,6 +37,8 @@ library:
   - hakyll
   exposed-modules:
   - Templates
+  default-extensions:
+  - LambdaCase
 
 executables:
   site:
