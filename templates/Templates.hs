@@ -26,7 +26,6 @@
 There are more things in heaven and earth, Horatio, than are dreamt.
    -- From "Hamlet"
 --------------------------------------------------------------------------------
-
 -}
 
 --------------------------------------------------------------------------------
@@ -182,6 +181,7 @@ metas = H.section ! A.class_ "metas" $ do
     "$endif$"
 
 --------------------------------------------------------------------------------
+
 meta :: H.AttributeValue -> H.AttributeValue -> H.Html
 meta name content = H.meta ! A.name name ! A.content content
 
