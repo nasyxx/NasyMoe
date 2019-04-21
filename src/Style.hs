@@ -46,13 +46,16 @@ module Main (main) where
 import           Prelude                 hiding ( rem
                                                 , (**)
                                                 , div
+                                                , span
                                                 )
 --------------------------------------------------------------------------------
-import           Clay                    hiding ( fontColor )
+import           Control.Monad                  ( zipWithM_ )
+--------------------------------------------------------------------------------
+import           Clay                    hiding ( fontColor
+                                                , map
+                                                )
 import qualified Clay.Flexbox                  as CF
 --------------------------------------------------------------------------------
-
-
 main :: IO ()
 main = putCss $ specialB >> basic >> layout >> blog
 
@@ -158,6 +161,7 @@ layout = do
 
     "#header" ? do
         display flex
+        justifyContent spaceAround
         alignItems center
 
         ul ? do
@@ -166,9 +170,11 @@ layout = do
 
         noUnderline
 
-        h1 <? fontFamily ["Chalkduster"] [fantasy]
+        h1 <? do
+            a <? fontFamily ["Chalkduster"] [fantasy]
+            paddingLeft (rem 1)
 
-        ".hide-in-header" ? display none
+        nav <? minWidth (rem 8)
 
         sym borderRadius $ px 5
         borderBottom dashed (px 5) lineColor
@@ -189,10 +195,7 @@ layout = do
             display flex
             marginBottom $ rem 1
             sym borderRadius $ px 5
-
-            nav <? do
-                paddingRight $ rem 2
-                ul <? borderRightColor transparent
+            justifyContent spaceAround
 
             boxShadow [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 3)]
             hover & boxShadow
