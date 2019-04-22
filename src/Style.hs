@@ -57,11 +57,10 @@ import           Clay                    hiding ( fontColor
 import qualified Clay.Flexbox                  as CF
 --------------------------------------------------------------------------------
 main :: IO ()
-main = putCss $ specialB >> basic >> layout >> blog
+main = putCss $ specialB >> basic >> layout >> metas >> blog
 
 specialB :: Css
-specialB = do
-    ".hide" ? display none
+specialB = ".hide" ? display none
 
 basic :: Css
 basic = do
@@ -76,8 +75,10 @@ basic = do
 
     -- | List Style
     ul ? do
-        (borderLeft <> borderRight) solid (rem 0.5) ulColor
         sym padding (px 1)
+        (borderLeft <> borderRight) solid (rem 0.5) ulColor
+        hover & (borderLeft <> borderRight) solid (rem 0.5) (darken 0.2 ulColor)
+        (borderTop <> borderBottom) solid (px 1) transparent
     li ? do
         listStyleType none
         borderLeft solid (rem 0.5) liColor
@@ -85,7 +86,7 @@ basic = do
         flip (sym2 margin) 0 $ px 1
         sym2 padding 0 $ px 2
 
-        hover & borderColor (darken 0.5 liColor)
+        hover & borderColor dliColor
 
         a <? display block
 
@@ -106,9 +107,11 @@ basic = do
     (hs <> a <> p <> span) ? fontFamily
         ["chalkboard", "comic sans", "pingfang sc", "meslo lg"]
         [sansSerif]
-    (pre <> ".sourceCode" <> code) ? fontFamily
-        ["Operator Mono SSm", "Operator Mono", "FiraCode", "hermit"]
-        [monospace]
+    (pre <> code <> ".sourceCode" <> ".sourceLine")
+        ? (p <> a <> span)
+        ? fontFamily
+              ["Operator Mono SSm", "Operator Mono", "FiraCode", "hermit"]
+              [monospace]
 
     -- Text Color
     (p <> span) ? color fontColor
@@ -211,6 +214,38 @@ layout = do
         color "#d988bc"
 
 
+metas :: Css
+metas = do
+    section # ".metas" ? do
+        sym padding $ rem 1
+        borderBottom dashed (px 2) lineColor
+        sym borderRadius $ px 5
+        backgroundColor $ lighten 0.1 bgColor
+        boxShadow [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 3)]
+        hover & boxShadow
+            [bsColor lineColor3 $ shadowWithBlur nil (px 2) (px 5)]
+    section # ".tags" |> ul ? do
+        display flex
+        flexFlow CF.row CF.wrap
+        li # ".tags-li" <? do
+            sym2 margin nil $ px 5
+            CF.flexShrink 0
+            sym borderRadius $ px 2
+            (borderLeft <> borderRight) solid (px 3) liColor
+            (borderTop <> borderBottom) solid (px 1) liColor
+            hover & do
+                backgroundColor $ lighten 0.3 bgColor
+                borderColor dliColor
+            boxShadow
+                [ bsColor (setA 0.5 dliColor) $ shadowWithBlur nil nil (px 3)
+                , bsInset . bsColor liColor $ shadowWithBlur 0 0 (px 10)
+                ]
+            hover & boxShadow
+                [ bsColor (setA 0.5 dliColor) $ shadowWithBlur nil nil (px 3)
+                , bsInset . bsColor dliColor $ shadowWithBlur 0 0 (px 10)
+                ]
+
+
 blog :: Css
 blog = do
     header # ".blog-header" ? do
@@ -219,7 +254,7 @@ blog = do
             backgroundColor $ setA 0.5 $ lighten 0.2 bgColor
             color bHeaderFColor
             "-webkit-text-stroke" -: "1px rgba(0,0,0,0.5)"
-            boxShadow [bsColor bHeaderBColor $ shadowWithBlur nil (px 2) (px 3)]
+            boxShadow [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 3)]
             hover & boxShadow
                 [bsColor bHeaderBColor $ shadowWithBlur nil (px 2) (px 5)]
             sym borderRadius (rem 0.5)
@@ -239,22 +274,24 @@ noUnderline :: Css
 noUnderline = a ? textDecoration none
 
 
-bgColor, fontColor, quoteColor, ulColor, liColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor
+bgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor
     :: Color
 bgColor = "#ffeab6"
 fontColor = "#303a52"
-quoteColor = "#fc85ae"
+quoteColor = "#f47c7c"
 ulColor = "#9e579d"
 liColor = lighten 0.2 "#f69d9d"
+dliColor = darken 0.5 liColor
 hyperColorDark = "#574b90"
 hyperColor = "#9e579d"
 hyperColorLight = "#fc85ae"
 lineColor = "#70a1d7"
 lineColor2 = "#d988bc"
+lineColor3 = "#a1de93"
 shadowColor = "#f67280"
 h1Color = "#6c567b"
 h2Color = "#ff8364"
 h3Color = "#616f39"
 h4Color = "#c06c84"
-bHeaderFColor = "#a1de93"
+bHeaderFColor = lineColor3
 bHeaderBColor = lineColor

@@ -128,10 +128,7 @@ blogContext tags =
     tagsContext tags <> dateField "date" "%B %e, %Y" <> defaultContext
 
 tagsContext :: Tags -> Context a
-tagsContext = tagsFieldWith getTags
-                            (simpleLink "tags-li")
-                            (mconcat . intersperse ",")
-                            "tags"
+tagsContext = tagsFieldWith getTags (simpleLink "tags-li") mconcat "tags"
 
 authorx :: Context a
 authorx = functionField "authorx"
