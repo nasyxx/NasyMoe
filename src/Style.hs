@@ -273,6 +273,12 @@ blog = do
         li # hover ? (borderTopColor <> borderBottomColor) transparent
 
 
+codeHighlight :: Css
+codeHighlight = do
+    p |> code ? do
+        border solid (px 1) black
+
+
 noUnderline :: Css
 noUnderline = a ? textDecoration none
 
