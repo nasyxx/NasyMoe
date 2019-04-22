@@ -68,6 +68,9 @@ basic = do
     blockquote ? do
         flip (sym2 margin) 0 $ rem 1
         borderLeft solid (rem 1) quoteColor
+        hover & borderLeftColor (darken 0.3 quoteColor)
+        (borderTop <> borderBottom) solid (px 2) transparent
+        star <? (marginTop <> marginBottom) nil
 
     -- | Paragraph style
     p ? do
