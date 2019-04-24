@@ -43,11 +43,9 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --------------------------------------------------------------------------------
 module Main (main) where
 --------------------------------------------------------------------------------
-import           Data.List                      ( isSuffixOf
-                                                , intersperse
-                                                )
-import           Data.List.Split                ( splitOn )
 import           Data.Char                      ( toLower )
+import           Data.List                      ( isSuffixOf )
+import           Data.List.Split                ( splitOn )
 --------------------------------------------------------------------------------
 import           Hakyll                  hiding ( pandocCompiler )
 --------------------------------------------------------------------------------
