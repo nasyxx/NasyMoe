@@ -57,7 +57,7 @@ import           Clay                    hiding ( fontColor
 import qualified Clay.Flexbox                  as CF
 --------------------------------------------------------------------------------
 main :: IO ()
-main = putCss $ specialB >> basic >> layout >> metas >> blog
+main = putCss $ specialB >> basic >> layout >> metas >> blog >> codeHighlight
 
 specialB :: Css
 specialB = ".hide" ? display none
@@ -190,6 +190,7 @@ layout = do
 
 
     "#footer" ? do
+        marginTop $ rem 1
         display flex
         flexFlow column CF.nowrap
         flexGrow 1
@@ -275,8 +276,35 @@ blog = do
 
 codeHighlight :: Css
 codeHighlight = do
+    ".blog-section" |> (pre <> div # ".sourceCode") ? do
+        sym borderRadius (px 5)
+        boxShadow
+            [ bsColor lineColor2 $ shadowWithBlur nil nil (px 3)
+            , bsInset . bsColor ccBox $ shadowWithBlur nil nil (px 1)
+            ]
+        hover & boxShadow [bsColor ccBox $ shadowWithBlur nil nil (px 5)]
+    ".blog-section" |> pre ? (important . sym padding $ rem 1)
     p |> code ? do
-        border solid (px 1) black
+        color ccVariable
+        border solid (px 1) ccBox
+        hover & color ccText
+    pre |> code ? color ccText
+
+    ".im" ? color ccImport
+    ".kw" ? do
+        color ccKeyword
+        fontStyle italic
+    ".bu" ? color ccBuiltIn
+    ".va" ? do
+        color ccVariable
+        textDecoration underline
+    ".op" ? color ccOperator
+    ".co" ? do
+        color ccComment
+        fontStyle italic
+    ".ex" ? color ccExtension
+    ".fu" ? color ccFunction
+    ".st" ? color ccString
 
 
 noUnderline :: Css
@@ -304,3 +332,17 @@ h3Color = "#616f39"
 h4Color = "#c06c84"
 bHeaderFColor = lineColor3
 bHeaderBColor = lineColor
+
+ccText, ccBox, ccImport, ccKeyword, ccBuiltIn, ccVariable, ccOperator, ccComment, ccExtension, ccFunction, ccString
+    :: Color
+ccBox = lineColor3
+ccText = h3Color
+ccImport = quoteColor
+ccKeyword = "#17b978"
+ccBuiltIn = lineColor
+ccVariable = "#705772"
+ccOperator = "#f38181"
+ccComment = "#aaaa88"
+ccExtension = ccImport
+ccFunction = hyperColorDark
+ccString = ulColor
