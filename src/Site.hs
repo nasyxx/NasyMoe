@@ -49,7 +49,7 @@ import           Data.List                      ( isSuffixOf
 import           Data.List.Split                ( splitOn )
 import           Data.Char                      ( toLower )
 --------------------------------------------------------------------------------
-import           Hakyll
+import           Hakyll                  hiding ( pandocCompiler )
 --------------------------------------------------------------------------------
 import           Network.HTTP.Base              ( urlEncode )
 import           System.FilePath.Posix          ( takeBaseName
@@ -65,12 +65,20 @@ import           Text.Blaze.Html                ( toHtml
                                                 )
 import qualified Text.Blaze.Html5              as H
 import qualified Text.Blaze.Html5.Attributes   as A
+import           Text.Pandoc                    ( writerExtensions
+                                                , writerHTMLMathMethod
+                                                , writerHighlightStyle
+                                                , Extension(..)
+                                                , extensionsFromList
+                                                , HTMLMathMethod(KaTeX)
+                                                )
+import           Text.Pandoc.Highlighting       ( haddock )
 --------------------------------------------------------------------------------
 import           Templates                      ( Templet(..)
                                                 , fromTemplet
                                                 )
 --------------------------------------------------------------------------------
-
+-- Main
 config :: Configuration
 config = defaultConfiguration { destinationDirectory = "public" }
 
@@ -193,6 +201,41 @@ orgMetadatas = map (format . lower . clean) . takeWhile (/= "") . lines
 
 metadatasToStr :: [String] -> String
 metadatasToStr = ("----------\n" ++) . (++ "----------\n") . unlines
+
+--------------------------------------------------------------------------------
+-- | Compiler
+pandocCompiler :: Compiler (Item String)
+pandocCompiler = pandocCompilerWith defaultHakyllReaderOptions writerOptions
+  where
+    extensions =
+        [ -- Math
+          Ext_tex_math_dollars
+        , Ext_tex_math_double_backslash
+        , Ext_latex_macros
+          -- Org
+        , Ext_citations
+        , Ext_auto_identifiers
+          -- Html
+        , Ext_native_divs
+        , Ext_native_spans
+          -- Others
+        , Ext_yaml_metadata_block
+        , Ext_table_captions
+        , Ext_implicit_figures
+        , Ext_simple_tables
+        , Ext_multiline_tables
+        , Ext_grid_tables
+        , Ext_pipe_tables
+        , Ext_citations
+        , Ext_literate_haskell
+        , Ext_fancy_lists
+        , Ext_smart
+        ]
+    writerOptions = defaultHakyllWriterOptions
+        { writerHTMLMathMethod = KaTeX ""
+        , writerExtensions     = extensionsFromList extensions
+        , writerHighlightStyle = Just haddock
+        }
 
 --------------------------------------------------------------------------------
 -- | Custom Helper

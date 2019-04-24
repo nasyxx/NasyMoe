@@ -50,6 +50,7 @@ executables:
     - filepath
     - hakyll
     - HTTP
+    - pandoc
     - split
     - NasyMoe
     ghc-options:
