@@ -87,12 +87,17 @@ main = hakyllWith config $ do
         route idRoute
         compile copyFileCompiler
 
-    match ("blogs/*.org" .||. "blogs/*/*.org") $ do
-        route tempRoute
-        compile $ getResourceString >>= fromOrgCompiler
+    match ("articles/*.org" .||. "articles/*/*.org" .||. "articles/*/*/*.org")
+        $ do
+              route tempRoute
+              compile $ getResourceString >>= fromOrgCompiler
 
-    tags <- buildTags ("_temp/blogs/*.org" .||. "_temp/blogs/*/*.org")
-                      (fromCapture "tags/*")
+    tags <- buildTags
+        (    "_temp/articles/*.org"
+        .||. "_temp/articles/*/*.org"
+        .||. "_temp/articles/*/*/*.org"
+        )
+        (fromCapture "tags/*")
 
     tagsRules tags $ \tag pat -> do
         route cleanRoute
@@ -109,17 +114,21 @@ main = hakyllWith config $ do
                 >>= relativizeUrls
                 >>= cleanIndexHtmls
 
-    match ("_temp/blogs/*" .||. "_temp/blogs/*/*") $ do
-        route cleanRouteFromTemp
-        compile
-            $   pandocCompiler
-            >>= applyTemplets
-                    [Blog, Layout]
-                    (authorx <> blogContext tags <> defaultContext)
-            >>= relativizeUrls
-            >>= cleanIndexUrls
+    match
+            (    "_temp/articles/*.org"
+            .||. "_temp/articles/*/*.org"
+            .||. "_temp/articles/*/*/*.org"
+            )
+        $ do
+              route cleanRouteFromTemp
+              compile
+                  $   pandocCompiler
+                  >>= applyTemplets
+                          [Blog, Layout]
+                          (authorx <> blogContext tags <> defaultContext)
+                  >>= relativizeUrls
+                  >>= cleanIndexUrls
 
-    create ["index.html"] $ do
     create ["tags/index.html"] $ do
         route idRoute
         compile $ do
@@ -128,10 +137,16 @@ main = hakyllWith config $ do
                 >>= applyTemplets [Cloud, Layout] context
                 >>= relativizeUrls
                 >>= cleanIndexUrls
+
+    create ["index.html", "blogs/index.html"] $ do
         route idRoute
         compile $ do
-            blogs <- recentFirst
-                =<< loadAll ("_temp/blogs/*.org" .||. "_temp/blogs/*/*.org")
+            blogs <- recentFirst =<< loadAll
+                (    complement "_temp/articles/About.org"
+                .&&. "_temp/articles/*.org"
+                .||. "_temp/articles/*/*.org"
+                .||. "_temp/articles/*/*/*.org"
+                )
             let context =
                     listField "blogs"
                               (blogContext tags <> defaultContext)
@@ -175,7 +190,7 @@ cleanRouteFromTemp :: Routes
 cleanRouteFromTemp = customRoute createIndexRoute
   where
     createIndexRoute ident =
-        (joinPath . tail . splitDirectories . takeDirectory) p
+        (joinPath . tail . tail . splitDirectories . takeDirectory) p
             </> (toUrlString . takeBaseName) p
             </> "index.html"
         where p = toFilePath ident
@@ -261,7 +276,7 @@ pandocCompiler = pandocCompilerWith defaultHakyllReaderOptions writerOptions
 --------------------------------------------------------------------------------
 -- | Establish url string.
 toUrlString :: String -> String
-toUrlString = foldr shortit [] . filter isAscii . map repl
+toUrlString = foldr shortit [] . filter isAscii . map (toLower . repl)
   where
     repl ' ' = '-'
     repl c   = c
