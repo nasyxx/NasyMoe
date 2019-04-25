@@ -71,6 +71,7 @@ main =
         >> blogs
         >> blog
         >> codeHighlight
+        >> mix
 
 --------------------------------------------------------------------------------
 -- Main Css
@@ -315,27 +316,13 @@ blogs = section # ".blogs-list" ? do
 
 
 blog :: Css
-blog = do
-    header # ".blog-header" ? do
-        h2 <? do
-            sym2 padding (rem 0.5) 0
-            backgroundColor $ setA 0.5 $ lighten 0.2 bgColor
-            color bHeaderFColor
-            "-webkit-text-stroke" -: "1px rgba(0,0,0,0.5)"
-            boxShadow [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 3)]
-            hover & boxShadow
-                [bsColor bHeaderBColor $ shadowWithBlur nil (px 2) (px 5)]
-            sym borderRadius (rem 0.5)
-            textShadow (px 1) (px 2) (px 3) (setA 0.3 black)
-            hover & textShadow (px 1) (px 2) (px 5) (setA 0.5 black)
-            textAlign center
-    section # ".blog-section" ? do
-        (div # ".sourceCode" <> pre) <? do
-            overflowX scroll
-            sym2 padding 0 (rem 1)
-        ul ? borderWidth nil
-        li # hover ? (borderTopColor <> borderBottomColor) transparent
-        zipWithM_ (?) hs' $ map (fontSize . rem) [1.5, 1.3, 1.2, 1.1]
+blog = section # ".blog-section" ? do
+    (div # ".sourceCode" <> pre) <? do
+        overflowX scroll
+        sym2 padding 0 (rem 1)
+    ul ? borderWidth nil
+    li # hover ? (borderTopColor <> borderBottomColor) transparent
+    zipWithM_ (?) hs' $ map (fontSize . rem) [1.5, 1.3, 1.2, 1.1]
 
 
 codeHighlight :: Css
@@ -369,6 +356,21 @@ codeHighlight = do
     ".ex" ? color ccExtension
     ".fu" ? color ccFunction
     ".st" ? color ccString
+
+
+mix :: Css
+mix = h2 # ".center-title" ? do
+    sym2 padding (rem 0.5) 0
+    backgroundColor $ setA 0.2 lineColor3
+    hover & backgroundColor (setA 0.5 lineColor3)
+    color bHeaderFColor
+    textAlign center
+    "-webkit-text-stroke" -: "1px rgba(0,0,0,0.5)"
+    boxShadow [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 3)]
+    hover & boxShadow [bsColor bHeaderBColor $ shadowWithBlur nil (px 2) (px 5)]
+    sym borderRadius (rem 0.5)
+    textShadow (px 1) (px 2) (px 3) (setA 0.3 black)
+    hover & textShadow (px 1) (px 2) (px 5) (setA 0.5 black)
 
 --------------------------------------------------------------------------------
 -- Parts

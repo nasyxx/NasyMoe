@@ -155,7 +155,7 @@ layout = do
 blog :: H.Html
 blog = H.article ! A.class_ "blog" $ do
     H.header ! A.class_ "blog-header" $ do
-        H.h2 "$title$"
+        H.h2 ! A.class_ "center-title" $ "$title$"
         metas
     H.section ! A.class_ "blog-section" $ "$body$"
 
@@ -169,6 +169,9 @@ blogs = H.section ! A.class_ "blogs-list" $ H.ul $ do
 
 tocTemplate :: H.Html
 tocTemplate = H.section ! A.class_ "blogs-list" $ do
+    "$if(tag)$"
+    H.h2 ! A.class_ "center-title" $ "$tag$"
+    "$endif$"
     "$for(blogs)$"
     H.section $ do
         H.a ! A.href "$url$" ! A.title "$title$" $ H.h2 "$title$"

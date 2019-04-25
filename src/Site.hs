@@ -107,10 +107,15 @@ main = hakyllWith config $ do
                     "blogs"
                     (blogContext tags <> defaultContext)
                     (pure blogs)
+                tag'         = "Tag: " ++ tag
             makeItem ""
                 >>= applyTemplets
                         [Toc, Layout]
-                        (blogsContext <> tagsContext tags <> defaultContext)
+                        (  constField "tag" tag'
+                        <> blogsContext
+                        <> tagsContext tags
+                        <> defaultContext
+                        )
                 >>= relativizeUrls
                 >>= cleanIndexHtmls
 
