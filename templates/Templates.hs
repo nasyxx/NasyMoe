@@ -60,7 +60,7 @@ import           Text.Blaze.Html.Renderer.Pretty
 import           Text.Blaze.Internal            ( customAttribute )
 --------------------------------------------------------------------------------
 
-data Templet = Layout | Blog | Blogs | Tags'
+data Templet = Layout | Blog | Blogs | Toc
 
 --------------------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ fromTemplet = readTemplate . renderHtml . \case
     Layout -> layout
     Blog   -> blog
     Blogs  -> blogs
-    Tags'  -> tagsTemplate
+    Toc    -> tocTemplate
 
 simpleLink :: H.AttributeValue -> String -> Maybe FilePath -> Maybe H.Html
 simpleLink _ _ Nothing = Nothing
@@ -82,7 +82,7 @@ simpleLink cstr str (Just filepath) =
         $ toHtml ("#" ++ str)
 
 --------------------------------------------------------------------------------
-
+-- Templates
 layout :: H.Html
 layout = do
     H.docType
@@ -165,8 +165,17 @@ blogs = H.section ! A.class_ "blogs-list" $ H.ul $ do
     H.li $ H.a ! A.title "$title$" ! A.href "$url$" $ "$title$"
     "$endfor$"
 
---------------------------------------------------------------------------------
 
+tocTemplate :: H.Html
+tocTemplate = H.section ! A.class_ "blogs-list" $ do
+    "$for(blogs)$"
+    H.section $ do
+        H.a ! A.href "$url$" ! A.title "$title$" $ H.h2 "$title$"
+        metas
+    "$endfor$"
+
+--------------------------------------------------------------------------------
+-- Partials
 nav :: H.Html
 nav = H.nav ! A.class_ "nasy-links" $ H.ul $ sequence_ $ zipWith3
     (\h t c -> H.li $ H.a ! A.href h ! A.title t $ c)
@@ -205,17 +214,8 @@ metas = H.section ! A.class_ "metas" $ do
     cc "author" = "author $authorx(author)$"
     cc m'       = toValue m'
 
-
-tagsTemplate :: H.Html
-tagsTemplate = H.section ! A.class_ "blogs-list" $ do
-    H.ul $ do
-        "$for(blogs)$"
-        H.li $ do
-            H.a ! A.href "$url$" ! A.title "$title$" $ "$title$"
-        "$endfor$"
-
 --------------------------------------------------------------------------------
-
+-- Special
 meta :: H.AttributeValue -> H.AttributeValue -> H.Html
 meta name content = H.meta ! A.name name ! A.content content
 
