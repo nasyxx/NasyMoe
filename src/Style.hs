@@ -55,6 +55,7 @@ import           Control.Monad                  ( zipWithM_
 --------------------------------------------------------------------------------
 import           Clay                    hiding ( fontColor
                                                 , map
+                                                , s
                                                 )
 import qualified Clay.Flexbox                  as CF
 --------------------------------------------------------------------------------
@@ -71,6 +72,8 @@ main =
         >> blog
         >> codeHighlight
 
+--------------------------------------------------------------------------------
+-- Main Css
 specialB :: Css
 specialB = ".hide" ? display none
 
@@ -140,10 +143,6 @@ basic = do
 
     -- | Everything Style
     star ? transition "all" 0.4 easeInOut 0
-  where
-    hs  = h1 <> h2 <> h3 <> h4 <> h5 <> h6
-    hs' = [h1, h2, h3, h4]
-    hsc = [h1Color, h2Color, h3Color, h4Color]
 
 
 layout :: Css
@@ -207,21 +206,19 @@ layout = do
         flexFlow column CF.nowrap
         flexGrow 1
         flexShrink 0
-        justifyContent spaceBetween
+        justifyContent flexEnd
 
         noUnderline
         header <? do
             display flex
             marginBottom $ rem 1
+            borderTop dashed (px 5) lineColor
             sym borderRadius $ px 5
             justifyContent spaceAround
 
             boxShadow [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 3)]
             hover & boxShadow
                 [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 5)]
-
-        borderTop dashed (px 5) lineColor
-        sym borderRadius $ px 5
 
     "#copyright" ? do
         fontFamily ["American Typewriter"] [cursive, serif]
@@ -280,6 +277,43 @@ tags = section # "#tags-cloud" ? do
     a <? do
         sym margin $ rem 1
         hover & color lineColor3
+
+
+blogs :: Css
+blogs = section # ".blogs-list" ? do
+    display flex
+    flexFlow column CF.nowrap
+    alignContent center
+    justifyContent flexStart
+    section <? do
+        boxShadow [bsColor lineColor $ shadowWithBlur nil (px 2) (px 3)]
+        hover & boxShadow
+            [bsColor bHeaderBColor $ shadowWithBlur nil (px 2) (px 5)]
+        sym borderRadius (rem 0.5)
+        sym margin       (rem 0.5)
+        h2 ? do
+            paddingLeft $ rem 0.5
+            sym margin nil
+            color bHeaderFColor
+            "-webkit-text-stroke" -: "1px rgba(0,0,0,0.5)"
+            (  borderLeft solid (rem 1)
+                <> (borderBottom <> borderTop) solid (px 2)
+                <> backgroundColor
+                .  setA 0.3
+                )
+                bHeaderBColor
+            (borderTopLeftRadius <> borderTopRightRadius) (rem 0.5) (rem 0.5)
+        hover & h2 ? do
+            color bgColor
+            (  borderLeftColor
+                <> borderBottomColor
+                <> borderTopColor
+                <> backgroundColor
+                .  setA 0.3
+                )
+                quoteColor
+
+
 blog :: Css
 blog = do
     header # ".blog-header" ? do
@@ -299,9 +333,9 @@ blog = do
         (div # ".sourceCode" <> pre) <? do
             overflowX scroll
             sym2 padding 0 (rem 1)
-
         ul ? borderWidth nil
         li # hover ? (borderTopColor <> borderBottomColor) transparent
+        zipWithM_ (?) hs' $ map (fontSize . rem) [1.5, 1.3, 1.2, 1.1]
 
 
 codeHighlight :: Css
@@ -336,11 +370,20 @@ codeHighlight = do
     ".fu" ? color ccFunction
     ".st" ? color ccString
 
-
+--------------------------------------------------------------------------------
+-- Parts
 noUnderline :: Css
 noUnderline = a ? textDecoration none
 
+hs :: Selector
+hs' :: [Selector]
+hsc :: [Color]
+hs = h1 <> h2 <> h3 <> h4 <> h5 <> h6
+hs' = [h1, h2, h3, h4]
+hsc = [h1Color, h2Color, h3Color, h4Color]
 
+--------------------------------------------------------------------------------
+-- Color
 bgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor, metaColor
     :: Color
 bgColor = "#ffeab6"
@@ -355,7 +398,7 @@ hyperColorLight = "#fc85ae"
 lineColor = "#70a1d7"
 lineColor2 = "#d988bc"
 lineColor3 = "#a1de93"
-shadowColor = "#f67280"
+shadowColor = "#a9eec2"
 h1Color = "#6c567b"
 h2Color = "#ff8364"
 h3Color = "#616f39"
