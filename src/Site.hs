@@ -97,27 +97,42 @@ main = hakyllWith config $ do
         route cleanRoute
         compile $ do
             blogs <- recentFirst =<< loadAll pat
-            let blogsContext =
-                    listField "blogs" (blogContext tags) (pure blogs)
+            let blogsContext = listField
+                    "blogs"
+                    (blogContext tags <> defaultContext)
+                    (pure blogs)
             makeItem ""
                 >>= applyTemplets
-                        [Tags', Layout]
+                        [Toc, Layout]
                         (blogsContext <> tagsContext tags <> defaultContext)
-                >>= cleanIndexUrls
+                >>= relativizeUrls
+                >>= cleanIndexHtmls
 
     match ("_temp/blogs/*" .||. "_temp/blogs/*/*") $ do
         route cleanRouteFromTemp
         compile
             $   pandocCompiler
-            >>= applyTemplets [Blog, Layout] (authorx <> blogContext tags)
+            >>= applyTemplets
+                    [Blog, Layout]
+                    (authorx <> blogContext tags <> defaultContext)
             >>= relativizeUrls
             >>= cleanIndexUrls
 
     create ["index.html"] $ do
         route idRoute
         compile $ do
-            let context = nTitle <> defaultContext
-            makeItem [] >>= applyTemplets [Layout] context >>= relativizeUrls
+            blogs <- recentFirst
+                =<< loadAll ("_temp/blogs/*.org" .||. "_temp/blogs/*/*.org")
+            let context =
+                    listField "blogs"
+                              (blogContext tags <> defaultContext)
+                              (pure blogs)
+                        <> nTitle
+                        <> defaultContext
+            makeItem []
+                >>= applyTemplets [Toc, Layout] context
+                >>= relativizeUrls
+                >>= cleanIndexUrls
 
     create ["styles/main.css"] $ do
         route idRoute
@@ -130,8 +145,7 @@ nTitle :: Context a
 nTitle = constField "title" "Nasy Land"
 
 blogContext :: Tags -> Context String
-blogContext tags =
-    tagsContext tags <> dateField "date" "%B %e, %Y" <> defaultContext
+blogContext tags = tagsContext tags <> dateField "date" "%B %e, %Y"
 
 tagsContext :: Tags -> Context a
 tagsContext = tagsFieldWith getTags (simpleLink "tags-li") mconcat "tags"
