@@ -176,6 +176,9 @@ layout = do
             , bsInset . bsColor shadowColor $ shadowWithBlur 0 0 (px 5)
             ]
 
+    ("#header" <> "#footer" |> header) ? do
+        backgroundColor $ setA 0.1 hbgColor
+        hover & backgroundColor (setA 0.3 hbgColor)
 
     "#header" ? do
         display flex
@@ -200,6 +203,7 @@ layout = do
         hover & boxShadow
             [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 5)]
 
+    "#main" ? hover & backgroundColor (lighten 0.1 bgColor)
 
     "#footer" ? do
         marginTop $ rem 1
@@ -212,7 +216,6 @@ layout = do
         noUnderline
         header <? do
             display flex
-            marginBottom $ rem 1
             borderTop dashed (px 5) lineColor
             sym borderRadius $ px 5
             justifyContent spaceAround
@@ -226,6 +229,8 @@ layout = do
         fontSizeCustom smaller
         textAlign center
         color "#d988bc"
+        marginTop $ rem 1
+        backgroundColor bgColor
 
 
 metas :: Css
@@ -235,6 +240,7 @@ metas = do
         borderBottom dashed (px 2) lineColor
         sym borderRadius $ px 5
         backgroundColor $ lighten 0.1 bgColor
+        hover & backgroundColor (lighten 0.2 bgColor)
         boxShadow [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 3)]
         hover & boxShadow
             [bsColor lineColor3 $ shadowWithBlur nil (px 2) (px 5)]
@@ -386,9 +392,10 @@ hsc = [h1Color, h2Color, h3Color, h4Color]
 
 --------------------------------------------------------------------------------
 -- Color
-bgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor, metaColor
+bgColor, hbgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor, metaColor
     :: Color
 bgColor = "#ffeab6"
+hbgColor = "#fad284"
 fontColor = "#303a52"
 quoteColor = "#f47c7c"
 ulColor = "#9e579d"
