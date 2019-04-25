@@ -43,13 +43,14 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --------------------------------------------------------------------------------
 module Main (main) where
 --------------------------------------------------------------------------------
-import           Data.Char                      ( toLower )
+import           Data.Char                      ( toLower
+                                                , isAscii
+                                                )
 import           Data.List                      ( isSuffixOf )
 import           Data.List.Split                ( splitOn )
 --------------------------------------------------------------------------------
 import           Hakyll                  hiding ( pandocCompiler )
 --------------------------------------------------------------------------------
-import           Network.HTTP.Base              ( urlEncode )
 import           System.FilePath.Posix          ( takeBaseName
                                                 , takeFileName
                                                 , takeDirectory
@@ -167,7 +168,7 @@ cleanRouteFromTemp = customRoute createIndexRoute
   where
     createIndexRoute ident =
         (joinPath . tail . splitDirectories . takeDirectory) p
-            </> (urlEString . takeBaseName) p
+            </> (toUrlString . takeBaseName) p
             </> "index.html"
         where p = toFilePath ident
 
@@ -177,7 +178,7 @@ cleanRoute :: Routes
 cleanRoute = customRoute createIndexRoute
   where
     createIndexRoute ident =
-        takeDirectory p </> (urlEString . takeBaseName) p </> "index.html"
+        takeDirectory p </> takeBaseName p </> "index.html"
         where p = toFilePath ident
 
 
@@ -250,17 +251,15 @@ pandocCompiler = pandocCompilerWith defaultHakyllReaderOptions writerOptions
         }
 
 --------------------------------------------------------------------------------
--- | Custom Helper
-replaceSpace :: String -> String
-replaceSpace = map repl
+-- | Establish url string.
+toUrlString :: String -> String
+toUrlString = foldr shortit [] . filter isAscii . map repl
   where
     repl ' ' = '-'
     repl c   = c
+    shortit a []        = [a]
+    shortit a s@(b : _) = if a == b && a == '-' then s else a : s
 
--- | Encode url
--- I am not really happy with this, though gitalk makes me have to do like this.
-urlEString :: String -> String
-urlEString = urlEncode . replaceSpace
 
 -- | Apply templates
 applyTemplets
