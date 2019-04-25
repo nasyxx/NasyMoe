@@ -232,9 +232,9 @@ googleAnalytics = do
         \gtag('js', new Date());\
         \gtag('config', 'UA-102577027-1');"
     H.script
-        ! A.src "//instant.page/1.1.0"
+        ! A.src "//instant.page/1.2.2"
         ! A.type_ "module"
         ! customAttribute
               "Integrity"
-              "sha384-EwBObn5QAxP8f09iemwAJljc+sU+eUXeL9vSBw1eNmVarwhKk2F9vBEpaN9rsrtp"
+              "sha384-2xV8M5griQmzyiY3CDqh1dn4z3llDVqZDqzjzcY+jCBCk/a5fXJmuZ/40JJAPeoU"
         $ ""
