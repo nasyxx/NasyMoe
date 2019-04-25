@@ -60,16 +60,17 @@ import           Text.Blaze.Html.Renderer.Pretty
 import           Text.Blaze.Internal            ( customAttribute )
 --------------------------------------------------------------------------------
 
-data Templet = Layout | Blog | Blogs | Toc
+data Templet = Layout | Blog | Blogs | Toc | Cloud
 
 --------------------------------------------------------------------------------
-
+-- Helper
 fromTemplet :: Templet -> Template
 fromTemplet = readTemplate . renderHtml . \case
     Layout -> layout
     Blog   -> blog
     Blogs  -> blogs
     Toc    -> tocTemplate
+    Cloud  -> cloud
 
 simpleLink :: H.AttributeValue -> String -> Maybe FilePath -> Maybe H.Html
 simpleLink _ _ Nothing = Nothing
@@ -174,14 +175,18 @@ tocTemplate = H.section ! A.class_ "blogs-list" $ do
         metas
     "$endfor$"
 
+
+cloud :: H.Html
+cloud = H.section ! A.id "tags-cloud" $ "$cloud$"
+
 --------------------------------------------------------------------------------
 -- Partials
 nav :: H.Html
 nav = H.nav ! A.class_ "nasy-links" $ H.ul $ sequence_ $ zipWith3
     (\h t c -> H.li $ H.a ! A.href h ! A.title t $ c)
-    ["/", "/about#About", "mailto:nasyxx+nasymoe@gmail.com"]
-    ["home", "about", "email me"]
-    ["Home", "About", "Email Me"]
+    ["/", "/about#About", "/tags", "mailto:nasyxx+nasymoe@gmail.com"]
+    ["home", "about", "tags", "email me"]
+    ["Home", "About", "Tags", "Email Me"]
 
 
 friendLinks :: H.Html

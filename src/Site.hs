@@ -120,6 +120,14 @@ main = hakyllWith config $ do
             >>= cleanIndexUrls
 
     create ["index.html"] $ do
+    create ["tags/index.html"] $ do
+        route idRoute
+        compile $ do
+            let context = tagCloudField "cloud" 80 125 tags <> defaultContext
+            makeItem []
+                >>= applyTemplets [Cloud, Layout] context
+                >>= relativizeUrls
+                >>= cleanIndexUrls
         route idRoute
         compile $ do
             blogs <- recentFirst

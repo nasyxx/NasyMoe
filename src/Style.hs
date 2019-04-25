@@ -58,8 +58,18 @@ import           Clay                    hiding ( fontColor
                                                 )
 import qualified Clay.Flexbox                  as CF
 --------------------------------------------------------------------------------
+-- Main
 main :: IO ()
-main = putCss $ specialB >> basic >> layout >> metas >> blog >> codeHighlight
+main =
+    putCss
+        $  specialB
+        >> basic
+        >> layout
+        >> metas
+        >> tags
+        >> blogs
+        >> blog
+        >> codeHighlight
 
 specialB :: Css
 specialB = ".hide" ? display none
@@ -260,6 +270,16 @@ metas = do
                 ]
 
 
+tags :: Css
+tags = section # "#tags-cloud" ? do
+    fontSize $ rem 3
+    display flex
+    flexFlow row CF.wrap
+    justifyContent center
+    alignItems center
+    a <? do
+        sym margin $ rem 1
+        hover & color lineColor3
 blog :: Css
 blog = do
     header # ".blog-header" ? do
