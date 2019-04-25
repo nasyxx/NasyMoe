@@ -49,7 +49,9 @@ import           Prelude                 hiding ( rem
                                                 , span
                                                 )
 --------------------------------------------------------------------------------
-import           Control.Monad                  ( zipWithM_ )
+import           Control.Monad                  ( zipWithM_
+                                                , forM_
+                                                )
 --------------------------------------------------------------------------------
 import           Clay                    hiding ( fontColor
                                                 , map
@@ -228,11 +230,19 @@ metas = do
         boxShadow [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 3)]
         hover & boxShadow
             [bsColor lineColor3 $ shadowWithBlur nil (px 2) (px 5)]
+    section ? do
+        forM_ (map byClass ["author", "date", "summary"]) $ \e -> e & p <? do
+            color metaColor
+            textDecoration underline
+            textDecorationColor ulColor
     section # ".tags" |> ul ? do
         display flex
         flexFlow CF.row CF.wrap
+        borderWidth nil
+        sym2 padding nil $ rem 1
         li # ".tags-li" <? do
             sym2 margin nil $ px 5
+            nthChild "1" & marginLeft nil
             CF.flexShrink 0
             sym borderRadius $ px 2
             (borderLeft <> borderRight) solid (px 3) liColor
@@ -311,7 +321,7 @@ noUnderline :: Css
 noUnderline = a ? textDecoration none
 
 
-bgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor
+bgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor, metaColor
     :: Color
 bgColor = "#ffeab6"
 fontColor = "#303a52"
@@ -332,6 +342,7 @@ h3Color = "#616f39"
 h4Color = "#c06c84"
 bHeaderFColor = lineColor3
 bHeaderBColor = lineColor
+metaColor = lineColor
 
 ccText, ccBox, ccImport, ccKeyword, ccBuiltIn, ccVariable, ccOperator, ccComment, ccExtension, ccFunction, ccString
     :: Color
