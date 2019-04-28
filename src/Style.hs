@@ -330,6 +330,7 @@ blog = section # ".blog-section" ? do
     ul ? borderWidth nil
     li # hover ? (borderTopColor <> borderBottomColor) transparent
     zipWithM_ (?) hs' $ map (fontSize . rem) [1.5, 1.3, 1.2, 1.1]
+    ".footnotes" ? p ? sym margin nil
 
 
 codeHighlight :: Css
