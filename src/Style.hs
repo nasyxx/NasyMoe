@@ -376,6 +376,7 @@ comment = do
             ".vssue-new-comment-input" ? do
                 color fontColor
                 backgroundColor hbgColor
+                disabled & backgroundColor hbgColor
                 focus & backgroundColor bgColor
                 textShadow (px 1) (px 2) (px 3) (setA 0.3 fontColor)
                 "::placeholder" & do
