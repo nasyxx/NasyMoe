@@ -163,6 +163,10 @@ main = hakyllWith config $ do
                 >>= relativizeUrls
                 >>= cleanIndexUrls
 
+    create ["CNAME"] $ do
+        route idRoute
+        compile $ makeItem ("nasy.moe\n" :: String)
+
     create ["styles/main.css"] $ do
         route idRoute
         compile $ makeItem [] >>= withItemBody
