@@ -71,6 +71,7 @@ main =
         >> blogs
         >> blog
         >> codeHighlight
+        >> comment
         >> mix
 
 --------------------------------------------------------------------------------
@@ -123,7 +124,7 @@ basic = do
         hover & textShadow (px 1) (px 2) (px 5) (setA 0.5 black)
 
     -- Text FontFamily
-    (hs <> a <> p <> span) ? fontFamily
+    (hs <> a <> p <> span <> textarea) ? fontFamily
         ["chalkboard", "comic sans", "pingfang sc", "meslo lg"]
         [sansSerif]
     (pre <> code <> ".sourceCode" <> ".sourceLine")
@@ -364,6 +365,48 @@ codeHighlight = do
     ".st" ? color ccString
 
 
+comment :: Css
+comment = do
+    ".vssue-header-powered-by" ? display none
+    ".vssue" ? do
+        ".vssue-header" ? borderBottomColor lineColor
+        ".vssue-new-comment" ? do
+            borderBottomColor lineColor
+            ".vssue-new-comment-input" ? do
+                color fontColor
+                backgroundColor hbgColor
+                focus & backgroundColor bgColor
+                textShadow (px 1) (px 2) (px 3) (setA 0.3 fontColor)
+                "::placeholder" & do
+                    color ulColor
+                    focus & color lineColor
+        ".vssue-button" ? do
+            disabled & (color <> borderColor) h2Color
+            fontFamily
+                ["chalkboard", "comic sans", "pingfang sc", "meslo lg"]
+                [sansSerif]
+        ".vssue-comments " ? ".vssue-comment" ? do
+            ".vssue-comment-header"
+                <> ".vssue-comment-main"
+                <> ".vssue-comment-footer"
+                ?  borderWidth nil
+            zipWithM_
+                (\cl c -> cl ? do
+                    backgroundColor (setA 0.1 c)
+                    hover & backgroundColor (setA 0.2 c)
+                )
+                [ ".vssue-comment-header"
+                , ".vssue-comment-main"
+                , ".vssue-comment-footer"
+                ]
+                [lineColor, lineColor3, lineColor2]
+            ".vssue-comment-main" ? ".vssue-edit-comment-input" ? do
+                fontSize $ rem 1
+                textShadow (px 1) (px 2) (px 3) (setA 0.3 fontColor)
+            ".vssue-comment-avatar" ? img ? sym borderRadius (pct 50)
+        ".vssue-pagination" ? ".vssue-pagination-per-page" ? display none
+    ".markdown-body" ? blockquote ? borderLeftColor quoteColor
+
 mix :: Css
 mix = h2 # ".center-title" ? do
     sym2 padding (rem 0.5) 0
@@ -402,7 +445,7 @@ ulColor = "#9e579d"
 liColor = lighten 0.2 "#f69d9d"
 dliColor = darken 0.5 liColor
 hyperColorDark = "#574b90"
-hyperColor = "#9e579d"
+hyperColor = ulColor
 hyperColorLight = "#fc85ae"
 lineColor = "#70a1d7"
 lineColor2 = "#d988bc"
