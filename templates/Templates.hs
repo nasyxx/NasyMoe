@@ -229,9 +229,14 @@ cloud = H.section ! A.id "tags-cloud" $ "$cloud$"
 nav :: H.Html
 nav = H.nav ! A.class_ "nasy-links" $ H.ul $ sequence_ $ zipWith3
     (\h t c -> H.li $ H.a ! A.href h ! A.title t $ c)
-    ["/", "/about#About", "/tags", "mailto:nasyxx+nasymoe@gmail.com"]
-    ["home", "about", "tags", "email me"]
-    ["Home", "About", "Tags", "Email Me"]
+    [ "/"
+    , "/about#About"
+    , "/tags"
+    , "/emacs.d"
+    , "mailto:nasyxx+nasymoe@gmail.com"
+    ]
+    ["home", "about", "tags", "emacs configuration", "email me"]
+    ["Home", "About", "Tags", "Emacs Configuration", "Email Me"]
 
 
 friendLinks :: H.Html
