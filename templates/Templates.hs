@@ -257,13 +257,10 @@ friendLinks = H.nav ! A.class_ "friend-links" $ H.ul $ zipWithM_
 
 metas :: H.Html
 metas = H.section ! A.class_ "metas" $ do
-    mapM_
-        (\m -> do
-            toHtml $ "$if(" ++ m ++ ")$"
-            H.section ! A.class_ (cc m) $ H.p $ toHtml $ "$" ++ m ++ "$"
-            "$endif$"
-        )
-        ["author", "date", "summary"]
+    forM_ ["author", "date", "summary"] $ \m -> do
+        toHtml $ "$if(" ++ m ++ ")$"
+        H.section ! A.class_ (cc m) $ H.p $ toHtml $ "$" ++ m ++ "$"
+        "$endif$"
     "$if(tags)$"
     H.section ! A.class_ "meta tags" $ H.ul "$tags$"
     "$endif$"
