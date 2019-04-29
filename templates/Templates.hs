@@ -147,6 +147,7 @@ layout = do
                       ! A.src "https://unpkg.com/vue/dist/vue.runtime.min.js"
                       $ ""
                   vssue
+                  aos
                   googleAnalytics
               H.body $ do
                   H.header ! A.id "header" ! A.class_ "header" $ do
@@ -212,9 +213,13 @@ tocTemplate = H.section ! A.class_ "blogs-list" $ do
     H.h2 ! A.class_ "center-title" $ "$tag$"
     "$endif$"
     "$for(blogs)$"
-    H.section $ do
-        H.a ! A.href "$url$" ! A.title "$title$" $ H.h2 "$title$"
-        metas
+    H.section
+        ! customAttribute "data-aos"                  "fade-up"
+        ! customAttribute "data-aos-duration"         "2000"
+        ! customAttribute "data-aos-anchor-placement" "center-bottom"
+        $ do
+              H.a ! A.href "$url$" ! A.title "$title$" $ H.h2 "$title$"
+              metas
     "$endfor$"
 
 
@@ -290,6 +295,8 @@ googleAnalytics = do
               "Integrity"
               "sha384-2xV8M5griQmzyiY3CDqh1dn4z3llDVqZDqzjzcY+jCBCk/a5fXJmuZ/40JJAPeoU"
         $ ""
+
+
 vssue :: H.Html
 vssue = do
     H.link
@@ -300,3 +307,12 @@ vssue = do
     H.script ! A.src "https://unpkg.com/vssue/dist/vssue.github.min.js" $ ""
 
 
+aos :: H.Html
+aos = do
+    H.link
+        ! A.rel "stylesheet"
+        ! A.href "https://unpkg.com/aos/dist/aos.css"
+        ! A.type_ "text/css"
+        ! A.media "screen"
+    H.script ! A.src "https://unpkg.com/aos/dist/aos.js" $ ""
+    H.script "AOS.init()"
