@@ -167,10 +167,20 @@ main = hakyllWith config $ do
         route idRoute
         compile $ makeItem ("nasy.moe\n" :: String)
 
+    create ["README.org"] $ do
+        route idRoute
+        compile $ makeItem readme
+
     create ["styles/main.css"] $ do
         route idRoute
         compile $ makeItem [] >>= withItemBody
             (unixFilter "stack" ["exec", "style"])
+  where
+    readme :: String
+    readme
+        = "* Nasy Personal Blog\n\n\
+             \+ Address: https://nays.moe\n\
+             \+ Source: https://github.com/nasyxx/nasyxx.github.io\n"
 
 --------------------------------------------------------------------------------
 -- | Context
