@@ -110,7 +110,7 @@ main = hakyllWith config $ do
                 tag'         = "Tag: " ++ tag
             makeItem ""
                 >>= applyTemplets
-                        [Toc, Layout]
+                        [Blogs, Layout]
                         (  constField "tag" tag'
                         <> blogsContext
                         <> tagsContext tags
@@ -159,7 +159,7 @@ main = hakyllWith config $ do
                         <> nTitle
                         <> defaultContext
             makeItem []
-                >>= applyTemplets [Toc, Layout] context
+                >>= applyTemplets [Blogs, Layout] context
                 >>= relativizeUrls
                 >>= cleanIndexUrls
 

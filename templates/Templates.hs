@@ -62,7 +62,7 @@ import           Text.Blaze.Html.Renderer.Pretty
 import           Text.Blaze.Internal            ( customAttribute )
 --------------------------------------------------------------------------------
 
-data Templet = Layout | Blog | Blogs | Toc | Cloud
+data Templet = Layout | Blog | Blogs | Cloud
 
 --------------------------------------------------------------------------------
 -- Helper
@@ -71,7 +71,6 @@ fromTemplet = readTemplate . renderHtml . \case
     Layout -> layout
     Blog   -> blog
     Blogs  -> blogs
-    Toc    -> tocTemplate
     Cloud  -> cloud
 
 simpleLink :: H.AttributeValue -> String -> Maybe FilePath -> Maybe H.Html
@@ -201,14 +200,7 @@ blog = H.article ! A.class_ "blog" $ do
 
 
 blogs :: H.Html
-blogs = H.section ! A.class_ "blogs-list" $ H.ul $ do
-    "$for(blogs)$"
-    H.li $ H.a ! A.title "$title$" ! A.href "$url$" $ "$title$"
-    "$endfor$"
-
-
-tocTemplate :: H.Html
-tocTemplate = H.section ! A.class_ "blogs-list" $ do
+blogs = H.section ! A.class_ "blogs-list" $ do
     "$if(tag)$"
     H.h2 ! A.class_ "center-title" $ "$tag$"
     "$endif$"
