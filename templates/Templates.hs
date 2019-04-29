@@ -154,9 +154,14 @@ layout = do
                       nav
                   H.main ! A.id "main" ! A.class_ "main" $ "$body$"
                   H.footer ! A.id "footer" ! A.class_ "footer" $ do
-                      H.header $ do
-                          nav
-                          friendLinks
+                      H.header
+                          ! customAttribute "data-aos"          "zoom-out-up"
+                          ! customAttribute "data-aos-duration" "600"
+                          ! customAttribute "data-aos-anchor-placement"
+                                            "top-bottom"
+                          $ do
+                                nav
+                                friendLinks
                       H.section ! A.id "copyright" $ H.p "Copyright © 2019 Nasy"
 
 
@@ -207,7 +212,7 @@ blogs = H.section ! A.class_ "blogs-list" $ do
     "$for(blogs)$"
     H.section
         ! customAttribute "data-aos"                  "fade-up"
-        ! customAttribute "data-aos-duration"         "2000"
+        ! customAttribute "data-aos-duration"         "1000"
         ! customAttribute "data-aos-anchor-placement" "center-bottom"
         $ do
               H.a ! A.href "$url$" ! A.title "$title$" $ H.h2 "$title$"
