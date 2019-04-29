@@ -79,7 +79,7 @@ import           Templates                      ( Templet(..)
 --------------------------------------------------------------------------------
 -- Main
 config :: Configuration
-config = defaultConfiguration { destinationDirectory = "public" }
+config = defaultConfiguration { destinationDirectory = "build" }
 
 main :: IO ()
 main = hakyllWith config $ do
