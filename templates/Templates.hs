@@ -137,17 +137,16 @@ layout = do
                   H.meta ! A.httpEquiv "Page-Exit" ! A.content
                       "RevealTrans(Duration=1.0,Transition=1)"
 
-                  forM_
-                          [ "https://unpkg.com/vssue/dist/vssue.min.css"
-                          , "/styles/main.css"
-                          ]
-                      $ \url ->
-                            H.link
-                                ! A.rel "stylesheet"
-                                ! A.href url
-                                ! A.type_ "text/css"
-                                ! A.media "screen"
+                  H.link
+                      ! A.rel "stylesheet"
+                      ! A.href "/styles/main.css"
+                      ! A.type_ "text/css"
+                      ! A.media "screen"
 
+                  H.script
+                      ! A.src "https://unpkg.com/vue/dist/vue.runtime.min.js"
+                      $ ""
+                  vssue
                   googleAnalytics
               H.body $ do
                   H.header ! A.id "header" ! A.class_ "header" $ do
@@ -168,8 +167,6 @@ blog = H.article ! A.class_ "blog" $ do
         metas
     H.section ! A.class_ "blog-section" $ "$body$"
     H.footer $ H.section ! A.id "comment" $ ""
-    H.script ! A.src "https://unpkg.com/vue/dist/vue.runtime.min.js" $ ""
-    H.script ! A.src "https://unpkg.com/vssue/dist/vssue.github.min.js" $ ""
     H.script
         "$if(comment)$\n\
       \const comment = \"$comment$\"\n\
@@ -293,3 +290,13 @@ googleAnalytics = do
               "Integrity"
               "sha384-2xV8M5griQmzyiY3CDqh1dn4z3llDVqZDqzjzcY+jCBCk/a5fXJmuZ/40JJAPeoU"
         $ ""
+vssue :: H.Html
+vssue = do
+    H.link
+        ! A.rel "stylesheet"
+        ! A.href "https://unpkg.com/vssue/dist/vssue.min.css"
+        ! A.type_ "text/css"
+        ! A.media "screen"
+    H.script ! A.src "https://unpkg.com/vssue/dist/vssue.github.min.js" $ ""
+
+
