@@ -1,3 +1,6 @@
 [submodule "pages"]
 	path = pages
 	url = https://github.com/nasyxx/nasyxx.github.io.git
+[submodule "articles"]
+	path = articles
+	url = https://github.com/nasyxx/articles
