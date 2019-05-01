@@ -231,7 +231,7 @@ nav = H.nav ! A.class_ "nasy-links" $ H.ul $ sequence_ $ zipWith3
     [ "/"
     , "/about#About"
     , "/tags"
-    , "/emacs.d"
+    , "https://emacs.nasy.moe"
     , "mailto:nasyxx+nasymoe@gmail.com"
     ]
     ["home", "about", "tags", "emacs configuration", "email me"]
