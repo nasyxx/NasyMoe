@@ -117,6 +117,7 @@ main = hakyllWith config $ do
                         <> defaultContext
                         )
                 >>= relativizeUrls
+                >>= cleanIndexUrls
                 >>= cleanIndexHtmls
 
     match
@@ -133,6 +134,7 @@ main = hakyllWith config $ do
                           (authorx <> blogContext tags <> defaultContext)
                   >>= relativizeUrls
                   >>= cleanIndexUrls
+                  >>= cleanIndexHtmls
 
     create ["tags/index.html"] $ do
         route idRoute
@@ -142,6 +144,7 @@ main = hakyllWith config $ do
                 >>= applyTemplets [Cloud, Layout] context
                 >>= relativizeUrls
                 >>= cleanIndexUrls
+                >>= cleanIndexHtmls
 
     create ["index.html", "blogs/index.html"] $ do
         route idRoute
@@ -162,6 +165,7 @@ main = hakyllWith config $ do
                 >>= applyTemplets [Blogs, Layout] context
                 >>= relativizeUrls
                 >>= cleanIndexUrls
+                >>= cleanIndexHtmls
 
     create ["CNAME"] $ do
         route idRoute
