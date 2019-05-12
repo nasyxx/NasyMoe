@@ -59,19 +59,23 @@ import qualified Text.Blaze.Html5              as H
 import qualified Text.Blaze.Html5.Attributes   as A
 import           Text.Blaze.Html.Renderer.Pretty
                                                 ( renderHtml )
-import           Text.Blaze.Internal            ( customAttribute )
+import           Text.Blaze.Internal            ( customAttribute
+                                                , customParent
+                                                , preEscapedText
+                                                )
 --------------------------------------------------------------------------------
 
-data Templet = Layout | Blog | Blogs | Cloud
+data Templet = Layout | Blog | Blogs | Cloud | Sitemap
 
 --------------------------------------------------------------------------------
 -- Helper
 fromTemplet :: Templet -> Template
 fromTemplet = readTemplate . renderHtml . \case
-    Layout -> layout
-    Blog   -> blog
-    Blogs  -> blogs
-    Cloud  -> cloud
+    Layout  -> layout
+    Blog    -> blog
+    Blogs   -> blogs
+    Cloud   -> cloud
+    Sitemap -> sitemap
 
 simpleLink :: H.AttributeValue -> String -> Maybe FilePath -> Maybe H.Html
 simpleLink _ _ Nothing = Nothing
@@ -222,6 +226,38 @@ blogs = H.section ! A.class_ "blogs-list" $ do
 
 cloud :: H.Html
 cloud = H.section ! A.id "tags-cloud" $ "$cloud$"
+
+
+sitemap :: H.Html
+sitemap = do
+    preEscapedText "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+    customParent "urlset"
+        ! customAttribute "xmlns" "http://www.sitemaps.org/schemas/sitemap/0.9"
+        ! customAttribute "xmlns:news"
+                          "http://www.google.com/schemas/sitemap-news/0.9"
+        ! customAttribute "xmlns:xhtml" "http://www.w3.org/1999/xhtml"
+        ! customAttribute "xmlns:mobile"
+                          "http://www.google.com/schemas/sitemap-mobile/1.0"
+        ! customAttribute "xmlns:image"
+                          "http://www.google.com/schemas/sitemap-image/1.1"
+        ! customAttribute "xmlns:video"
+                          "http://www.google.com/schemas/sitemap-video/1.1"
+        $ do
+              url $ do
+                  loc "$root$"
+                  priority "1.0"
+              "$for(blogs)$"
+              url $ do
+                  loc "$root$$url$"
+                  "$if(date)$"
+                  customParent "lastmod" "$date$"
+                  "$endif$"
+                  priority "0.8"
+              "$endfor$"
+  where
+    url      = customParent "url"
+    loc      = customParent "loc"
+    priority = customParent "priority"
 
 --------------------------------------------------------------------------------
 -- Partials

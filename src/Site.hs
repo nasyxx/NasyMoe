@@ -171,6 +171,29 @@ main = hakyllWith config $ do
         route idRoute
         compile $ makeItem ("nasy.moe\n" :: String)
 
+    create ["sitemap.xml"] $ do
+        route idRoute
+        compile $ do
+            blogs <- recentFirst =<< loadAll
+                (    "_temp/articles/*.org"
+                .||. "_temp/articles/*/*.org"
+                .||. "_temp/articles/*/*/*.org"
+                )
+            let context =
+                    constField "root" "https://nasy.moe/"
+                        <> listField
+                               "blogs"
+                               (  constField "root" "https://nasy.moe"
+                               <> dateField "date" "%Y-%m-%d"
+                               <> defaultContext
+                               )
+                               (pure blogs)
+                        <> defaultContext
+            makeItem []
+                >>= applyTemplets [Sitemap] context
+                >>= cleanIndexUrls
+                >>= cleanIndexHtmls
+
     create ["README.org"] $ do
         route idRoute
         compile $ makeItem readme
