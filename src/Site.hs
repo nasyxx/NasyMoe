@@ -92,12 +92,7 @@ main = hakyllWith config $ do
               route tempRoute
               compile $ getResourceString >>= fromOrgCompiler
 
-    tags <- buildTags
-        (    "_temp/articles/*.org"
-        .||. "_temp/articles/*/*.org"
-        .||. "_temp/articles/*/*/*.org"
-        )
-        (fromCapture "tags/*")
+    tags <- buildTags blogPattern (fromCapture "tags/*")
 
     tagsRules tags $ \tag pat -> do
         route cleanRoute
@@ -120,22 +115,6 @@ main = hakyllWith config $ do
                 >>= cleanIndexUrls
                 >>= cleanIndexHtmls
 
-    match
-            (    "_temp/articles/*.org"
-            .||. "_temp/articles/*/*.org"
-            .||. "_temp/articles/*/*/*.org"
-            )
-        $ do
-              route cleanRouteFromTemp
-              compile
-                  $   pandocCompiler
-                  >>= applyTemplets
-                          [Blog, Layout]
-                          (authorx <> blogContext tags <> defaultContext)
-                  >>= relativizeUrls
-                  >>= cleanIndexUrls
-                  >>= cleanIndexHtmls
-
     create ["tags/index.html"] $ do
         route idRoute
         compile $ do
@@ -149,12 +128,9 @@ main = hakyllWith config $ do
     create ["index.html", "blogs/index.html"] $ do
         route idRoute
         compile $ do
-            blogs <- recentFirst =<< loadAll
-                (    complement "_temp/articles/About.org"
-                .&&. "_temp/articles/*.org"
-                .||. "_temp/articles/*/*.org"
-                .||. "_temp/articles/*/*/*.org"
-                )
+            blogs <-
+                recentFirst =<< loadAll
+                    (complement "_temp/articles/About.org" .&&. blogPattern)
             let context =
                     listField "blogs"
                               (blogContext tags <> defaultContext)
@@ -167,18 +143,23 @@ main = hakyllWith config $ do
                 >>= cleanIndexUrls
                 >>= cleanIndexHtmls
 
-    create ["CNAME"] $ do
-        route idRoute
-        compile $ makeItem ("nasy.moe\n" :: String)
+    match blogPattern $ do
+        route cleanRouteFromTemp
+        compile $ do
+            let context = (authorx <> blogContext tags <> defaultContext)
+            pandocCompiler
+                >>= applyTemplets [Blog] context
+                >>= saveSnapshot "contents"
+                >>= applyTemplets [Layout] context
+                >>= relativizeUrls
+                >>= cleanIndexUrls
+                >>= cleanIndexHtmls
+
 
     create ["sitemap.xml"] $ do
         route idRoute
         compile $ do
-            blogs <- recentFirst =<< loadAll
-                (    "_temp/articles/*.org"
-                .||. "_temp/articles/*/*.org"
-                .||. "_temp/articles/*/*/*.org"
-                )
+            blogs <- recentFirst =<< loadAll blogPattern
             let context =
                     constField "root" "https://nasy.moe/"
                         <> listField
@@ -194,6 +175,10 @@ main = hakyllWith config $ do
                 >>= cleanIndexUrls
                 >>= cleanIndexHtmls
 
+    create ["CNAME"] $ do
+        route idRoute
+        compile $ makeItem ("nasy.moe\n" :: String)
+
     create ["README.org"] $ do
         route idRoute
         compile $ makeItem readme
@@ -208,6 +193,12 @@ main = hakyllWith config $ do
         = "* Nasy Personal Blog\n\n\
              \+ Address: https://nays.moe\n\
              \+ Source: https://github.com/nasyxx/nasyxx.github.io\n"
+    blogPattern :: Pattern
+    blogPattern =
+        (    "_temp/articles/*.org"
+        .||. "_temp/articles/*/*.org"
+        .||. "_temp/articles/*/*/*.org"
+        )
 
 --------------------------------------------------------------------------------
 -- | Context
