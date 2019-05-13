@@ -146,11 +146,6 @@ layout = do
                       ! A.type_ "text/css"
                       ! A.media "screen"
 
-                  H.script
-                      ! A.src "https://unpkg.com/vue/dist/vue.runtime.min.js"
-                      $ ""
-                  vssue
-                  aos
                   googleAnalytics
               H.body $ do
                   H.header ! A.id "header" ! A.class_ "header" $ do
@@ -160,13 +155,14 @@ layout = do
                   H.footer ! A.id "footer" ! A.class_ "footer" $ do
                       H.header
                           ! customAttribute "data-aos"          "zoom-out-up"
-                          ! customAttribute "data-aos-duration" "600"
+                          ! customAttribute "data-aos-duration" "400"
                           ! customAttribute "data-aos-anchor-placement"
                                             "top-bottom"
                           $ do
                                 nav
                                 friendLinks
                       H.section ! A.id "copyright" $ H.p "Copyright © 2019 Nasy"
+                  aos
 
 
 blog :: H.Html
@@ -176,6 +172,8 @@ blog = H.article ! A.class_ "blog" $ do
         metas
     H.section ! A.class_ "blog-section" $ "$body$"
     H.footer $ H.section ! A.id "comment" $ ""
+    H.script ! A.src "https://unpkg.com/vue/dist/vue.runtime.min.js" $ ""
+    vssue
     H.script
         "$if(comment)$\n\
       \const comment = \"$comment$\"\n\
