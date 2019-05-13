@@ -103,7 +103,7 @@ main = hakyllWith config $ do
     match ("articles/*.org" .||. "articles/*/*.org" .||. "articles/*/*/*.org")
         $ do
               route tempRoute
-              compile $ getResourceString >>= fromOrgCompiler
+              compile $ getResourceString >>= orgCompiler
 
     tags <- buildTags blogPattern (fromCapture "tags/*")
 
@@ -287,11 +287,12 @@ cleanIndex url | idx `isSuffixOf` url = take (length url - length idx) url
                | otherwise            = url
     where idx = "index.html"
 
-
 --------------------------------------------------------------------------------
+-- | Compilers
+
 -- | From org get metadatas.
-fromOrgCompiler :: Item String -> Compiler (Item String)
-fromOrgCompiler = pure . fmap (\s -> (metadatasToStr . orgMetadatas) s ++ s)
+orgCompiler :: Item String -> Compiler (Item String)
+orgCompiler = pure . fmap (\s -> (metadatasToStr . orgMetadatas) s ++ s)
 
 orgMetadatas :: String -> [String]
 orgMetadatas = map (format . lower . clean) . takeWhile (/= "") . lines
