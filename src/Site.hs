@@ -306,8 +306,7 @@ orgMetadatas = map (format . lower . clean) . takeWhile (/= "") . lines
 metadatasToStr :: [String] -> String
 metadatasToStr = ("----------\n" ++) . (++ "----------\n") . unlines
 
---------------------------------------------------------------------------------
--- | Compiler
+-- | My Custom Pandoc Compiler
 pandocCompiler :: Compiler (Item String)
 pandocCompiler = pandocCompilerWith defaultHakyllReaderOptions writerOptions
   where
