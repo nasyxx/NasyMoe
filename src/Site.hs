@@ -159,7 +159,7 @@ main = hakyllWith config $ do
     match blogPattern $ do
         route cleanRouteFromTemp
         compile $ do
-            let context = (authorx <> blogContext tags <> defaultContext)
+            let context = authorx <> blogContext tags <> defaultContext
             pandocCompiler
                 >>= applyTemplets [Blog] context
                 >>= saveSnapshot "contents"
@@ -219,10 +219,9 @@ main = hakyllWith config $ do
              \+ Source: https://github.com/nasyxx/nasyxx.github.io\n"
     blogPattern :: Pattern
     blogPattern =
-        (    "_temp/articles/*.org"
-        .||. "_temp/articles/*/*.org"
-        .||. "_temp/articles/*/*/*.org"
-        )
+        "_temp/articles/*.org"
+            .||. "_temp/articles/*/*.org"
+            .||. "_temp/articles/*/*/*.org"
 
 --------------------------------------------------------------------------------
 -- | Context
