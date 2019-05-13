@@ -174,7 +174,7 @@ main = hakyllWith config $ do
             compile
                 $   loadAllSnapshots blogPattern "contents"
                 >>= recentFirst
-                >>= feedCompile render
+                >>= feedCompiler render
         )
         ["atom.xml", "rss.xml"]
         [renderAtom, renderRss]
@@ -341,8 +341,10 @@ pandocCompiler = pandocCompilerWith defaultHakyllReaderOptions writerOptions
         , writerHighlightStyle = Just haddock
         }
 
-feedCompile :: (FeedConfiguration -> Context String -> t) -> t
-feedCompile render = render
+
+-- | Atom and RSS XML feeds compiler
+feedCompiler :: (FeedConfiguration -> Context String -> t) -> t
+feedCompiler render = render
     feedConfiguration
     (dateField "date" "%Y-%m-%dT%H:%M:%SZ" <> descContext <> defaultContext)
 
