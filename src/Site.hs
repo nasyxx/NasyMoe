@@ -298,8 +298,9 @@ orgMetadatas = map (format . lower . clean) . takeWhile (/= "") . lines
   where
     clean = concat . splitOn ">" . concat . splitOn "#+" . concat . splitOn "<"
     lower s = (map toLower . takeWhile (/= ':')) s ++ dropWhile (/= ':') s
-    format xs@('d' : 'a' : 't' : 'e' : _) = take 16 xs  -- drop weekday str. 2018-05-03 Thu -> 2018-05-03
-    format a                              = a
+    format xs | -- drop weekday str. 2018-05-03 Thu -> 2018-05-03
+                "date" `isPrefixOf` xs = take 16 xs
+              | otherwise              = xs
 
 metadatasToStr :: [String] -> String
 metadatasToStr = ("----------\n" ++) . (++ "----------\n") . unlines
