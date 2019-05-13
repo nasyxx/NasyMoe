@@ -204,6 +204,8 @@ layout = do
         hover & boxShadow
             [bsColor lineColor2 $ shadowWithBlur nil (px 2) (px 5)]
 
+        ".header-hide" ? display none
+
     "#main" ? hover & backgroundColor (lighten 0.1 bgColor)
 
     "#footer" ? do
