@@ -43,10 +43,14 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --------------------------------------------------------------------------------
 module Main (main) where
 --------------------------------------------------------------------------------
+import           Control.Applicative            ( empty )
+import           Control.Monad                  ( zipWithM_ )
 import           Data.Char                      ( toLower
                                                 , isAscii
                                                 )
-import           Data.List                      ( isSuffixOf )
+import           Data.List                      ( isSuffixOf
+                                                , isPrefixOf
+                                                )
 import           Data.List.Split                ( splitOn )
 --------------------------------------------------------------------------------
 import           Hakyll                  hiding ( pandocCompiler )
@@ -80,6 +84,15 @@ import           Templates                      ( Templet(..)
 -- Main
 config :: Configuration
 config = defaultConfiguration { destinationDirectory = "build" }
+
+feedConfiguration :: FeedConfiguration
+feedConfiguration = FeedConfiguration
+    { feedTitle       = "Nasy Land"
+    , feedDescription = "The place to plant flower, feed fish and chat -- Blog."
+    , feedAuthorName  = "Nasy"
+    , feedAuthorEmail = "nasyxx+nasymoe@gmail.com"
+    , feedRoot        = "https://nasy.moe"
+    }
 
 main :: IO ()
 main = hakyllWith config $ do
@@ -155,6 +168,17 @@ main = hakyllWith config $ do
                 >>= cleanIndexUrls
                 >>= cleanIndexHtmls
 
+    zipWithM_
+        (\address render -> create [address] $ do
+            route idRoute
+            compile
+                $   loadAllSnapshots blogPattern "contents"
+                >>= recentFirst
+                >>= feedCompile render
+        )
+        ["atom.xml", "rss.xml"]
+        [renderAtom, renderRss]
+
 
     create ["sitemap.xml"] $ do
         route idRoute
@@ -214,6 +238,11 @@ tagsContext = tagsFieldWith getTags (simpleLink "tags-li") mconcat "tags"
 authorx :: Context a
 authorx = functionField "authorx"
     $ \args _ -> pure (if args == ["Nasy"] then "hide" else "")
+
+descContext :: Context String
+descContext = field "description" $ \i -> do
+    metadata <- getMetadata $ itemIdentifier i
+    maybe empty pure $ lookupString "summary" metadata
 --------------------------------------------------------------------------------
 -- | Temp Route
 tempRoute :: Routes
@@ -309,6 +338,11 @@ pandocCompiler = pandocCompilerWith defaultHakyllReaderOptions writerOptions
         , writerExtensions     = extensionsFromList extensions
         , writerHighlightStyle = Just haddock
         }
+
+feedCompile :: (FeedConfiguration -> Context String -> t) -> t
+feedCompile render = render
+    feedConfiguration
+    (dateField "date" "%Y-%m-%dT%H:%M:%SZ" <> descContext <> defaultContext)
 
 --------------------------------------------------------------------------------
 -- | Establish url string.
