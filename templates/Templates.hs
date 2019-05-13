@@ -46,6 +46,7 @@ import           Control.Monad                  ( zipWithM_
                                                 , forM_
                                                 )
 import           Data.Char                      ( toLower )
+import           Data.List                      ( zipWith4 )
 --------------------------------------------------------------------------------
 import           Hakyll                         ( Template
                                                 , readTemplate
@@ -260,16 +261,34 @@ sitemap = do
 --------------------------------------------------------------------------------
 -- Partials
 nav :: H.Html
-nav = H.nav ! A.class_ "nasy-links" $ H.ul $ sequence_ $ zipWith3
-    (\h t c -> H.li $ H.a ! A.href h ! A.title t $ c)
+nav = H.nav ! A.class_ "nasy-links" $ H.ul $ sequence_ $ zipWith4
+    (\h t c cl -> H.li ! A.class_ cl $ H.a ! A.href h ! A.title t $ c)
     [ "/"
     , "/about#About"
     , "/tags"
     , "https://emacs.nasy.moe"
     , "mailto:nasyxx+nasymoe@gmail.com"
+    , "/atom.xml"
+    , "/rss.xml"
     ]
-    ["home", "about", "tags", "emacs configuration", "email me"]
-    ["Home", "About", "Tags", "Emacs Configuration", "Email Me"]
+    [ "home"
+    , "about"
+    , "tags"
+    , "emacs configuration"
+    , "email me"
+    , "atom feed"
+    , "rss feed"
+    ]
+    [ "Home"
+    , "About"
+    , "Tags"
+    , "Emacs Configuration"
+    , "Email Me"
+    , "Atom Feed"
+    , "RSS Feed"
+    ]
+    ["", "", "", "", "header-hide", "header-hide", "header-hide"]
+
 
 
 friendLinks :: H.Html
