@@ -280,6 +280,9 @@ metas = do
                 , bsInset . bsColor dliColor $ shadowWithBlur 0 0 (px 10)
                 ]
             backgroundColor $ setA 0.6 nasyColor
+    section # ".cats" |> li # ".cats-li" <? do
+        borderLeft solid (rem 0.5) $ setA 0.6 lineColor
+        hover & borderColor (setA 0.6 dliColor)
 
 
 tags :: Css

@@ -209,8 +209,8 @@ blog = H.article ! A.class_ "blog" $ do
 
 blogs :: H.Html
 blogs = H.section ! A.class_ "blogs-list" $ do
-    "$if(tag)$"
-    H.h2 ! A.class_ "center-title" $ "$tag$"
+    "$if(subtitle)$"
+    H.h2 ! A.class_ "center-title" $ "$subtitle$"
     "$endif$"
     "$for(blogs)$"
     H.section
@@ -307,6 +307,9 @@ friendLinks = H.nav ! A.class_ "friend-links" $ H.ul $ zipWithM_
 
 metas :: H.Html
 metas = H.section ! A.class_ "metas" $ do
+    "$if(cats)$"
+    H.section ! A.class_ "meta cats" $ "$cats$"
+    "$endif$"
     forM_ ["author", "date", "summary"] $ \m -> do
         toHtml $ "$if(" ++ m ++ ")$"
         H.section ! A.class_ (cc m) $ H.p $ toHtml $ "$" ++ m ++ "$"

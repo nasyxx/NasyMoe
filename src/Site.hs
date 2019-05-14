@@ -106,27 +106,11 @@ main = hakyllWith config $ do
               compile $ getResourceString >>= orgCompiler
 
     tags <- buildTags blogPattern (fromCapture "tags/*")
+    cats <- buildTagsWith getCat blogPattern (fromCapture "cats/**")
 
-    tagsRules tags $ \tag pat -> do
-        route cleanRoute
-        compile $ do
-            blogs <- recentFirst =<< loadAll pat
-            let blogsContext = listField
-                    "blogs"
-                    (blogContext tags <> defaultContext)
-                    (pure blogs)
-                tag'         = "Tag: " ++ tag
-            makeItem ""
-                >>= applyTemplets
-                        [Blogs, Layout]
-                        (  constField "tag" tag'
-                        <> blogsContext
-                        <> tagsContext tags
-                        <> defaultContext
-                        )
-                >>= relativizeUrls
-                >>= cleanIndexUrls
-                >>= cleanIndexHtmls
+    let buildTCRules' = buildTCRules tags cats
+    buildTCRules' tags "Tag"
+    buildTCRules' cats "Category"
 
     create ["tags/index.html"] $ do
         route idRoute
@@ -145,9 +129,13 @@ main = hakyllWith config $ do
                 recentFirst =<< loadAll
                     (complement "_temp/articles/About.org" .&&. blogPattern)
             let context =
-                    listField "blogs"
-                              (blogContext tags <> defaultContext)
-                              (pure blogs)
+                    listField
+                            "blogs"
+                            (  blogContext tags
+                            <> catsContext cats
+                            <> defaultContext
+                            )
+                            (pure blogs)
                         <> nTitle
                         <> defaultContext
             makeItem []
@@ -159,7 +147,12 @@ main = hakyllWith config $ do
     match blogPattern $ do
         route cleanRouteFromTemp
         compile $ do
-            let context = authorx <> blogContext tags <> defaultContext
+            let
+                context =
+                    authorx
+                        <> blogContext tags
+                        <> catsContext cats
+                        <> defaultContext
             pandocCompiler
                 >>= applyTemplets [Blog] context
                 >>= saveSnapshot "contents"
@@ -211,17 +204,56 @@ main = hakyllWith config $ do
         route idRoute
         compile $ makeItem [] >>= withItemBody
             (unixFilter "stack" ["exec", "style"])
+
+-- | Helper
+readme :: String
+readme =
+    "* Nasy Personal Blog\n\n\
+    \+ Address: https://nays.moe\n\
+    \+ Source: https://github.com/nasyxx/nasyxx.github.io\n"
+
+blogPattern :: Pattern
+blogPattern =
+    "_temp/articles/*.org"
+        .||. "_temp/articles/*/*.org"
+        .||. "_temp/articles/*/*/*.org"
+
+getCat :: MonadMetadata m => Identifier -> m [String]
+getCat = pure . pure . getCat' . splitDirectories . takeDirectory . toFilePath
   where
-    readme :: String
-    readme
-        = "* Nasy Personal Blog\n\n\
-             \+ Address: https://nays.moe\n\
-             \+ Source: https://github.com/nasyxx/nasyxx.github.io\n"
-    blogPattern :: Pattern
-    blogPattern =
-        "_temp/articles/*.org"
-            .||. "_temp/articles/*/*.org"
-            .||. "_temp/articles/*/*/*.org"
+    getCat' ("articles" : []) = "📜"
+    getCat' ("articles" : cat : _) =
+     (\case
+            "Kusa" -> "🍀"
+            "Hana" -> "🌸"
+            "Fish" -> "🐠"
+            c      -> c
+        )
+        cat
+    getCat' ds = getCat' $ tail ds
+
+buildTCRules :: Tags -> Tags -> Tags -> String -> Rules ()
+buildTCRules tags cats typ title = tagsRules typ $ \typ' pat -> do
+    route cleanRoute
+    compile $ do
+        blogs <- recentFirst =<< loadAll pat
+        let blogsContext = listField
+                "blogs"
+                (blogContext tags <> catsContext cats <> defaultContext)
+                (pure blogs)
+            subtitle     = title ++ ": " ++ typ'
+        makeItem ""
+            >>= applyTemplets
+                    [Blogs, Layout]
+                    (  constField "subtitle" subtitle
+                    <> blogsContext
+                    <> tagsContext tags
+                    <> catsContext cats
+                    <> defaultContext
+                    )
+            >>= relativizeUrls
+            >>= cleanIndexUrls
+            >>= cleanIndexHtmls
 
 --------------------------------------------------------------------------------
 -- | Context
@@ -234,6 +266,9 @@ blogContext tags = tagsContext tags <> dateField "date" "%B %e, %Y"
 tagsContext :: Tags -> Context a
 tagsContext = tagsFieldWith getTags (simpleLink "tags-li" "🏷") mconcat "tags"
 
+catsContext :: Tags -> Context a
+catsContext = tagsFieldWith getCat (simpleLink "cats-li" "") mconcat "cats"
+
 authorx :: Context a
 authorx = functionField "authorx"
     $ \args _ -> pure (if args == ["Nasy"] then "hide" else "")
@@ -242,6 +277,7 @@ descContext :: Context String
 descContext = field "description" $ \i -> do
     metadata <- getMetadata $ itemIdentifier i
     maybe empty pure $ lookupString "summary" metadata
+
 --------------------------------------------------------------------------------
 -- | Temp Route
 tempRoute :: Routes
