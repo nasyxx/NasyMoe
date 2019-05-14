@@ -108,7 +108,9 @@ basic = do
 
         hover & borderColor dliColor
 
-        a <? display block
+        a <? do
+            display block
+            sym margin auto
 
     -- | Text style
     -- Text Shadow
@@ -258,6 +260,8 @@ metas = do
         borderWidth nil
         sym2 padding nil $ rem 1
         li # ".tags-li" <? do
+            display flex
+            alignItems baseline
             sym2 margin nil $ px 5
             nthChild "1" & marginLeft nil
             CF.flexShrink 0
@@ -275,6 +279,7 @@ metas = do
                 [ bsColor (setA 0.5 dliColor) $ shadowWithBlur nil nil (px 3)
                 , bsInset . bsColor dliColor $ shadowWithBlur 0 0 (px 10)
                 ]
+            backgroundColor $ setA 0.6 nasyColor
 
 
 tags :: Css
@@ -439,8 +444,9 @@ hsc = [h1Color, h2Color, h3Color, h4Color]
 
 --------------------------------------------------------------------------------
 -- Color
-bgColor, hbgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor, metaColor
+nasyColor, bgColor, hbgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor, metaColor
     :: Color
+nasyColor = "#eeffaa"
 bgColor = "#ffeab6"
 hbgColor = "#fad284"
 fontColor = "#303a52"

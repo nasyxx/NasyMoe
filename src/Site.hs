@@ -232,7 +232,7 @@ blogContext :: Tags -> Context String
 blogContext tags = tagsContext tags <> dateField "date" "%B %e, %Y"
 
 tagsContext :: Tags -> Context a
-tagsContext = tagsFieldWith getTags (simpleLink "tags-li") mconcat "tags"
+tagsContext = tagsFieldWith getTags (simpleLink "tags-li" "🏷") mconcat "tags"
 
 authorx :: Context a
 authorx = functionField "authorx"
@@ -371,12 +371,12 @@ applyTemplates (t : ts) context item =
 
 --------------------------------------------------------------------------------
 -- | Templates
-simpleLink :: H.AttributeValue -> String -> Maybe FilePath -> Maybe H.Html
-simpleLink _ _ Nothing = Nothing
-simpleLink cstr str (Just filepath) =
+simpleLink :: H.AttributeValue -> String -> String -> Maybe FilePath -> Maybe H.Html
+simpleLink _ _ _ Nothing = Nothing
+simpleLink cstr pref str (Just filepath) =
     Just
         $ H.li
         ! A.class_ cstr
         $ H.a
         ! A.href (toValue $ toUrl filepath)
-        $ toHtml ("#" ++ str)
+        $ toHtml (pref ++ str)
