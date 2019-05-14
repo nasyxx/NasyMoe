@@ -45,21 +45,21 @@ module Main (main) where
 --------------------------------------------------------------------------------
 import           Control.Applicative            ( empty )
 import           Control.Monad                  ( zipWithM_ )
-import           Data.Char                      ( toLower
-                                                , isAscii
+import           Data.Char                      ( isAscii
+                                                , toLower
                                                 )
-import           Data.List                      ( isSuffixOf
-                                                , isPrefixOf
+import           Data.List                      ( isPrefixOf
+                                                , isSuffixOf
                                                 )
 import           Data.List.Split                ( splitOn )
 --------------------------------------------------------------------------------
 import           Hakyll                  hiding ( pandocCompiler )
 --------------------------------------------------------------------------------
-import           System.FilePath.Posix          ( takeBaseName
-                                                , takeFileName
-                                                , takeDirectory
+import           System.FilePath.Posix          ( joinPath
                                                 , splitDirectories
-                                                , joinPath
+                                                , takeBaseName
+                                                , takeDirectory
+                                                , takeFileName
                                                 , (</>)
                                                 )
 import           Text.Blaze.Html                ( toHtml
@@ -68,12 +68,12 @@ import           Text.Blaze.Html                ( toHtml
                                                 )
 import qualified Text.Blaze.Html5              as H
 import qualified Text.Blaze.Html5.Attributes   as A
-import           Text.Pandoc                    ( writerExtensions
+import           Text.Pandoc                    ( Extension(..)
+                                                , HTMLMathMethod(KaTeX)
+                                                , extensionsFromList
+                                                , writerExtensions
                                                 , writerHTMLMathMethod
                                                 , writerHighlightStyle
-                                                , Extension(..)
-                                                , extensionsFromList
-                                                , HTMLMathMethod(KaTeX)
                                                 )
 import           Text.Pandoc.Highlighting       ( haddock )
 --------------------------------------------------------------------------------

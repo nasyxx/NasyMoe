@@ -42,8 +42,8 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --------------------------------------------------------------------------------
 module Templates (Templet(..), fromTemplet, simpleLink) where
 --------------------------------------------------------------------------------
-import           Control.Monad                  ( zipWithM_
-                                                , forM_
+import           Control.Monad                  ( forM_
+                                                , zipWithM_
                                                 )
 import           Data.Char                      ( toLower )
 import           Data.List                      ( zipWith4 )
@@ -52,14 +52,14 @@ import           Hakyll                         ( Template
                                                 , readTemplate
                                                 , toUrl
                                                 )
-import           Text.Blaze.Html                ( (!)
+import           Text.Blaze.Html                ( toHtml
                                                 , toValue
-                                                , toHtml
+                                                , (!)
                                                 )
-import qualified Text.Blaze.Html5              as H
-import qualified Text.Blaze.Html5.Attributes   as A
 import           Text.Blaze.Html.Renderer.Pretty
                                                 ( renderHtml )
+import qualified Text.Blaze.Html5              as H
+import qualified Text.Blaze.Html5.Attributes   as A
 import           Text.Blaze.Internal            ( customAttribute
                                                 , customParent
                                                 , preEscapedText

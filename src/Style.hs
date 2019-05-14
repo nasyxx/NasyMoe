@@ -43,14 +43,14 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 --------------------------------------------------------------------------------
 module Main (main) where
 --------------------------------------------------------------------------------
-import           Prelude                 hiding ( rem
-                                                , (**)
-                                                , div
+import           Prelude                 hiding ( div
+                                                , rem
                                                 , span
+                                                , (**)
                                                 )
 --------------------------------------------------------------------------------
-import           Control.Monad                  ( zipWithM_
-                                                , forM_
+import           Control.Monad                  ( forM_
+                                                , zipWithM_
                                                 )
 --------------------------------------------------------------------------------
 import           Clay                    hiding ( fontColor
