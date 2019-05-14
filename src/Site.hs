@@ -43,9 +43,7 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 module Main (main) where
 --------------------------------------------------------------------------------
 import           Control.Applicative            ( empty )
-import           Control.Monad                  ( forM_
-                                                , zipWithM_
-                                                )
+import           Control.Monad                  ( zipWithM_ )
 import           Data.Char                      ( isAscii
                                                 , toLower
                                                 )
@@ -113,15 +111,20 @@ main = hakyllWith config $ do
     buildTCRules' tags "Tag"
     buildTCRules' cats "Category"
 
-    forM_ ["tags/index.html", "cats/index.html"] $ \i -> create [i] $ do
-        route idRoute
-        compile $ do
-            let context = tagCloudField "cloud" 80 125 tags <> defaultContext
-            makeItem []
-                >>= applyTemplets [Cloud, Layout] context
-                >>= relativizeUrls
-                >>= cleanIndexUrls
-                >>= cleanIndexHtmls
+    zipWithM_
+        (\p typs -> create [p] $ do
+            route idRoute
+            compile $ do
+                let context =
+                        tagCloudField "cloud" 80 125 typs <> defaultContext
+                makeItem []
+                    >>= applyTemplets [Cloud, Layout] context
+                    >>= relativizeUrls
+                    >>= cleanIndexUrls
+                    >>= cleanIndexHtmls
+        )
+        ["tags/index.html", "cats/index.html"]
+        [tags, cats]
 
     create ["index.html", "blogs/index.html"] $ do
         route idRoute
