@@ -44,7 +44,9 @@ There are more things in heaven and earth, Horatio, than are dreamt.
 module Main (main) where
 --------------------------------------------------------------------------------
 import           Control.Applicative            ( empty )
-import           Control.Monad                  ( zipWithM_ )
+import           Control.Monad                  ( forM_
+                                                , zipWithM_
+                                                )
 import           Data.Char                      ( isAscii
                                                 , toLower
                                                 )
@@ -112,7 +114,7 @@ main = hakyllWith config $ do
     buildTCRules' tags "Tag"
     buildTCRules' cats "Category"
 
-    create ["tags/index.html"] $ do
+    forM_ ["tags/index.html", "cats/index.html"] $ \i -> create [i] $ do
         route idRoute
         compile $ do
             let context = tagCloudField "cloud" 80 125 tags <> defaultContext
@@ -221,15 +223,15 @@ blogPattern =
 getCat :: MonadMetadata m => Identifier -> m [String]
 getCat = pure . pure . getCat' . splitDirectories . takeDirectory . toFilePath
   where
-    getCat' ("articles" : []) = "📜"
+    getCat' ["articles"] = "📜"
     getCat' ("articles" : cat : _) =
-     (\case
-            "Kusa" -> "🍀"
-            "Hana" -> "🌸"
-            "Fish" -> "🐠"
-            c      -> c
-        )
-        cat
+        (\case
+                "Kusa" -> "🍀"
+                "Hana" -> "🌸"
+                "Fish" -> "🐠"
+                c      -> c
+            )
+            cat
     getCat' ds = getCat' $ tail ds
 
 buildTCRules :: Tags -> Tags -> Tags -> String -> Rules ()
@@ -410,7 +412,8 @@ applyTemplates (t : ts) context item =
 
 --------------------------------------------------------------------------------
 -- | Templates
-simpleLink :: H.AttributeValue -> String -> String -> Maybe FilePath -> Maybe H.Html
+simpleLink
+    :: H.AttributeValue -> String -> String -> Maybe FilePath -> Maybe H.Html
 simpleLink _ _ _ Nothing = Nothing
 simpleLink cstr pref str (Just filepath) =
     Just
