@@ -296,11 +296,14 @@ orgCompiler = pure . fmap (\s -> (metadatasToStr . orgMetadatas) s ++ s)
 orgMetadatas :: String -> [String]
 orgMetadatas = map (format . lower . clean) . takeWhile (/= "") . lines
   where
-    clean = concat . splitOn ">" . concat . splitOn "#+" . concat . splitOn "<"
+    clean = concat . splitOn "#+"
     lower s = (map toLower . takeWhile (/= ':')) s ++ dropWhile (/= ':') s
-    format xs | -- drop weekday str. 2018-05-03 Thu -> 2018-05-03
-                "date" `isPrefixOf` xs = take 16 xs
-              | otherwise              = xs
+    format xs
+        | -- drop weekday str. 2018-05-03 Thu -> 2018-05-03
+          "date" `isPrefixOf` xs
+        = take 16 . concat . splitOn ">" . concat . splitOn "<" $ xs
+        | otherwise
+        = xs
 
 metadatasToStr :: [String] -> String
 metadatasToStr = ("----------\n" ++) . (++ "----------\n") . unlines
