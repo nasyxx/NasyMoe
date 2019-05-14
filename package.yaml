@@ -45,6 +45,8 @@ executables:
     main: Site.hs
     source-dirs: src
     other-modules: []
+    default-extensions:
+    - LambdaCase
     dependencies:
     - blaze-html
     - filepath
