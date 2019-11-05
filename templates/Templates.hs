@@ -175,39 +175,39 @@ blog = H.article ! A.class_ "blog" $ do
         H.h2 ! A.class_ "center-title" $ "$title$"
         metas
     H.section ! A.class_ "blog-section" $ "$body$"
-    H.footer $ H.section ! A.id "comment" $ ""
-    H.script ! A.src "https://unpkg.com/vue/dist/vue.runtime.min.js" $ ""
-    vssue
-    H.script
-        "$if(comment)$\n\
-      \const comment = \"$comment$\"\n\
-      \$else$\n\
-      \const comment = \"$title$\"\n\
-      \$endif$\n\
-      \$if(ctitle)$\n\
-      \const ctitle = \"$ctitle$\"\n\
-      \$else$\n\
-      \const ctitle = \"$title$\"\n\
-      \$endif$\n\
-      \new Vue({\n\
-      \  el: '#comment',\n\
-      \  render: h => h('Vssue', {\n\
-      \    props: {\n\
-      \      title: ctitle,\
-      \      options: {\n\
-      \        state: \"Nasy\",\n\
-      \        labels: [\"comment\", comment],\n\
-      \        prefix: \"\",\n\
-      \        owner: \"nasyxx\",\n\
-      \        repo: \"comments\",\n\
-      \        clientId: \"cb5605d5ea28ce5ba8d2\",\n\
-      \        clientSecret: \"942e0d9f31ea8d7d30845fa26bc51ed6551153d8\",\n\
-      \        autoCreateIssue: false,\n\
-      \        issueContent: url => \"Comment of: \\n\" + document.URL,\n\
-      \      },\n\
-      \    }\n\
-      \  })\n\
-      \})"
+    -- H.footer $ H.section ! A.id "comment" $ ""
+    -- H.script ! A.src "https://unpkg.com/vue/dist/vue.runtime.min.js" $ ""
+    -- vssue
+    -- H.script
+    --     "$if(comment)$\n\
+    --   \const comment = \"$comment$\"\n\
+    --   \$else$\n\
+    --   \const comment = \"$title$\"\n\
+    --   \$endif$\n\
+    --   \$if(ctitle)$\n\
+    --   \const ctitle = \"$ctitle$\"\n\
+    --   \$else$\n\
+    --   \const ctitle = \"$title$\"\n\
+    --   \$endif$\n\
+    --   \new Vue({\n\
+    --   \  el: '#comment',\n\
+    --   \  render: h => h('Vssue', {\n\
+    --   \    props: {\n\
+    --   \      title: ctitle,\
+    --   \      options: {\n\
+    --   \        state: \"Nasy\",\n\
+    --   \        labels: [\"comment\", comment],\n\
+    --   \        prefix: \"\",\n\
+    --   \        owner: \"nasyxx\",\n\
+    --   \        repo: \"comments\",\n\
+    --   \        clientId: \"cb5605d5ea28ce5ba8d2\",\n\
+    --   \        clientSecret: \"942e0d9f31ea8d7d30845fa26bc51ed6551153d8\",\n\
+    --   \        autoCreateIssue: false,\n\
+    --   \        issueContent: url => \"Comment of: \\n\" + document.URL,\n\
+    --   \      },\n\
+    --   \    }\n\
+    --   \  })\n\
+    --   \})"
 
 
 blogs :: H.Html
