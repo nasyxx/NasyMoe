@@ -48,8 +48,10 @@ import           Control.Monad                  ( forM_
 import           Data.Char                      ( toLower )
 import           Data.List                      ( zipWith4 )
 --------------------------------------------------------------------------------
-import           Hakyll                         ( Template
-                                                , readTemplate
+import           Hakyll                         ( Compiler
+                                                , Template
+                                                , compileTemplateItem
+                                                , makeItem
                                                 , toUrl
                                                 )
 import           Text.Blaze.Html                ( toHtml
@@ -70,13 +72,14 @@ data Templet = Layout | Blog | Blogs | Cloud | Sitemap
 
 --------------------------------------------------------------------------------
 -- Helper
-fromTemplet :: Templet -> Template
-fromTemplet = readTemplate . renderHtml . \case
+fromTemplet :: Templet -> Compiler Template
+fromTemplet = (compileTemplateItem =<<) . makeItem . renderHtml . \case
     Layout  -> layout
     Blog    -> blog
     Blogs   -> blogs
     Cloud   -> cloud
     Sitemap -> sitemap
+
 
 simpleLink :: H.AttributeValue -> String -> Maybe FilePath -> Maybe H.Html
 simpleLink _ _ Nothing = Nothing

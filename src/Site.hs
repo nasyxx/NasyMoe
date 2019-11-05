@@ -265,7 +265,7 @@ nTitle :: Context a
 nTitle = constField "title" "Nasy Land"
 
 blogContext :: Tags -> Context String
-blogContext tags = tagsContext tags <> dateField "date" "%B %e, %Y"
+blogContext tags = authorx <> tagsContext tags <> dateField "date" "%B %e, %Y"
 
 tagsContext :: Tags -> Context a
 tagsContext = tagsFieldWith getTags (simpleLink "tags-li" "🏷") mconcat "tags"
@@ -401,21 +401,28 @@ toUrlString = foldr shortit [] . filter isAscii . map (toLower . repl)
 
 
 -- | Apply templates
-applyTemplets
-    :: [Templet] -> Context String -> Item String -> Compiler (Item String)
+applyTemplets :: [Templet]
+              -> Context String
+              -> Item String
+              -> Compiler (Item String)
 applyTemplets ts = applyTemplates (map fromTemplet ts)
 
-applyTemplates
-    :: [Template] -> Context String -> Item String -> Compiler (Item String)
+applyTemplates :: [Compiler Template]
+               -> Context String
+               -> Item String
+               -> Compiler (Item String)
 applyTemplates []  _       _    = error "Need a template"
-applyTemplates [t] context item = applyTemplate t context item
+applyTemplates [t] context item = t >>= (\t' -> applyTemplate t' context item)
 applyTemplates (t : ts) context item =
-    applyTemplate t context item >>= applyTemplates ts context
+    t >>= (\t' -> applyTemplate t' context item) >>= applyTemplates ts context
 
 --------------------------------------------------------------------------------
 -- | Templates
-simpleLink
-    :: H.AttributeValue -> String -> String -> Maybe FilePath -> Maybe H.Html
+simpleLink :: H.AttributeValue
+           -> String
+           -> String
+           -> Maybe FilePath
+           -> Maybe H.Html
 simpleLink _ _ _ Nothing = Nothing
 simpleLink cstr pref str (Just filepath) =
     Just
