@@ -120,9 +120,8 @@ basic = do
         )
         ([p, a] ++ hs')
         ([fontColor, hyperColor] ++ hsc)
-    (pre <> code) ? do
-        textShadow (px 1) (px 2) (px 3) (setA 0.3 black)
-        hover & textShadow (px 1) (px 2) (px 5) (setA 0.5 black)
+    (pre <> code) ? textShadow 0 0 (px 10) (setA 0.3 black)
+    pre |> code |> span ? hover & textShadow 0 0 (px 5) (setA 0.3 black)
 
     -- Text FontFamily
     (hs <> a <> p <> span <> textarea) ? fontFamily
@@ -446,8 +445,7 @@ hsc = [h1Color, h2Color, h3Color, h4Color]
 
 --------------------------------------------------------------------------------
 -- Color
-nasyColor, bgColor, hbgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor, metaColor
-    :: Color
+nasyColor, bgColor, hbgColor, fontColor, quoteColor, ulColor, liColor, dliColor, hyperColor, hyperColorDark, hyperColorLight, shadowColor, lineColor, lineColor2, lineColor3, h1Color, h2Color, h3Color, h4Color, bHeaderFColor, bHeaderBColor, metaColor :: Color
 nasyColor = "#eeffaa"
 bgColor = "#ffeab6"
 hbgColor = "#fad284"
@@ -471,8 +469,7 @@ bHeaderFColor = lineColor3
 bHeaderBColor = lineColor
 metaColor = lineColor
 
-ccText, ccBox, ccImport, ccKeyword, ccBuiltIn, ccVariable, ccOperator, ccComment, ccExtension, ccFunction, ccString
-    :: Color
+ccText, ccBox, ccImport, ccKeyword, ccBuiltIn, ccVariable, ccOperator, ccComment, ccExtension, ccFunction, ccString :: Color
 ccBox = lineColor3
 ccText = h3Color
 ccImport = quoteColor
@@ -480,7 +477,7 @@ ccKeyword = "#17b978"
 ccBuiltIn = lineColor
 ccVariable = "#705772"
 ccOperator = "#f38181"
-ccComment = "#aaaa88"
+ccComment = "#aa96da"
 ccExtension = ccImport
 ccFunction = hyperColorDark
 ccString = ulColor
