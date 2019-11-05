@@ -304,8 +304,9 @@ friendLinks = H.nav ! A.class_ "friend-links" $ H.ul $ zipWithM_
     , "https://mitsuhachan.ml"
     , "https://blog.zsakvo.cc"
     , "https://daisuke.moe"
+    , "http://desvl.xyz/"
     ]
-    ["Laobubu", "初雪", "三葉的喵窝", "水水的小窝", "白兔"]
+    ["Laobubu", "初雪", "三葉的喵窝", "水水的小窝", "白兔", "Desvl's Blog"]
 
 
 metas :: H.Html
